@@ -8,6 +8,7 @@ import {
   InputRightElement,
   Button,
 } from "@chakra-ui/react";
+import logo from "../../assets/images/logo.png"
 import { FaPhoneAlt, FaSearch, FaUser } from "react-icons/fa";
 import { IoMdMail } from "react-icons/io";
 import { FaLocationDot } from "react-icons/fa6"; // Lupa ikonu
@@ -74,7 +75,7 @@ const Header = () => {
       </XContainer>
       <XContainer width="95%">
         <Flex align="center" justify="space-between">
-          <Text fontSize="40px">Logo</Text>
+          <img width="70px" src={logo} alt="" />
           <InputGroup size="lg" width="500px">
             <InputRightElement pointerEvents="none">
               <FaSearch color="gray.300" />
@@ -121,11 +122,11 @@ const Header = () => {
       <XContainer bg="rgb(254, 246, 246)" width="100%">
         <Flex align="center" justifyContent="center" gap="10px">
           <NavLink to="/meals" style={{ fontWeight: "bold" }}>
-            Meals
+            Yemekler
           </NavLink>
           <Text>|</Text>
           <NavLink style={{ fontWeight: "bold" }} to="/cocktails">
-            Cocktails
+            Icecekler
           </NavLink>
         </Flex>
       </XContainer>

@@ -16,7 +16,7 @@ import { ICardData } from "../modules";
 
 const XCard = ({ title, content, btnContent, image, to }: ICardData) => {
   return (
-    <Card maxW="md" padding="10px">
+    <Card maxW="xl" padding="10px">
       <CardBody>
         <Image src={image} alt={title || "Image"} borderRadius="md" />
         <Stack mt="6" spacing="3">
@@ -30,8 +30,9 @@ const XCard = ({ title, content, btnContent, image, to }: ICardData) => {
           <Link to={to}>
             <Button
               rightIcon={<FaArrowRightLong />}
-              colorScheme="gray"
+              // color="red"
               variant="outline"
+              border="none"
             >
               {btnContent}
             </Button>
