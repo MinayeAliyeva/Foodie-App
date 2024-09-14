@@ -1,13 +1,13 @@
 import React from "react";
 import XContainer from "../../components/XContainer";
 import XCard from "../../components/XCard";
-import { Divider, Flex } from "@chakra-ui/react";
+import { Divider, Flex, Text } from "@chakra-ui/react";
 import { ICardData } from "../../modules";
-import { Text } from "@chakra-ui/react";
 import meatImage from "../../assets/images/meat.jpg";
 import cocktailImage from "../../assets/images/cocktail.jpg";
 import { XMealSlider } from "../../components/XMealSlider";
 import { XCocktailSlider } from "../../components/XCocktailSlider";
+import { FaArrowUp } from "react-icons/fa";
 
 const cardData: ICardData[] = [
   {
@@ -29,28 +29,59 @@ const cardData: ICardData[] = [
 ];
 
 const Home = () => {
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   return (
-    <>
-      <XContainer>
-        <Flex gap="30px" justifyContent="center">
-          {cardData.map((cardContent) => (
-            <XCard
-              key={cardContent.title}
-              title={cardContent.title}
-              content={cardContent.content}
-              btnContent={cardContent.buttonContent}
-              image={cardContent.image}
-              to={cardContent.to}
-            />
-          ))}
-        </Flex>
-        <Text fontWeight="bold">SICAK LEZZETLER</Text>
-        <XMealSlider />
-        <Divider />
-        <Text fontWeight="bold">ICECEKLER</Text>
-        <XCocktailSlider />
-      </XContainer>
-    </>
+    <XContainer>
+      <Flex gap="30px" justifyContent="center" mb="40px">
+        {cardData.map((card) => (
+          <XCard
+            key={card.title}
+            title={card.title}
+            content={card.content}
+            btnContent={card.buttonContent}
+            image={card.image}
+            to={card.to}
+          />
+        ))}
+      </Flex>
+
+      <Text fontWeight="bold" fontSize="2xl" mb="20px">
+        SICAK LEZZETLER
+      </Text>
+      <XMealSlider />
+
+      <Divider my="40px" />
+
+      <Text fontWeight="bold" fontSize="2xl" mb="20px">
+        İÇECEKLER
+      </Text>
+      <XCocktailSlider />
+
+      <Flex
+        position="fixed"
+        bottom="20px"
+        right="20px"
+        justify="center"
+        align="center"
+        backgroundColor="red"
+        borderRadius="50%"
+        p="10px"
+        boxShadow="md"
+        cursor="pointer"
+        zIndex="9999"
+        onClick={scrollToTop}
+        transition="transform 0.3s ease"
+        _hover={{ transform: "scale(1.1)" }}
+      >
+        <FaArrowUp color="white" fontSize="24px" />
+      </Flex>
+    </XContainer>
   );
 };
 
