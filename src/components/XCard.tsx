@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import { ICardData } from "../modules";
 
 const XCard = ({ title, content, btnContent, image, to }: ICardData) => {
   return (
