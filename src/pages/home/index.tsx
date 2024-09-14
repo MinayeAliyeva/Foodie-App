@@ -1,12 +1,13 @@
 import React from "react";
 import XContainer from "../../components/XContainer";
 import XCard from "../../components/XCard";
-import { Flex } from "@chakra-ui/react";
+import { Divider, Flex } from "@chakra-ui/react";
 import { ICardData } from "../../modules";
-
-// Görselleri import et
+import { Text } from "@chakra-ui/react";
 import meatImage from "../../assets/images/meat.jpg";
 import cocktailImage from "../../assets/images/cocktail.jpg";
+import { XMealSlider } from "../../components/XMealSlider";
+import { XCocktailSlider } from "../../components/XCocktailSlider";
 
 const cardData: ICardData[] = [
   {
@@ -15,7 +16,7 @@ const cardData: ICardData[] = [
       "En taze malzemelerle hazırlanan özel yemeklerimizi keşfedin ve damak tadınıza hitap eden eşsiz lezzetlerin tadını çıkarın.",
     buttonContent: "Menüyü İncele",
     image: meatImage,
-    to: "/meals"
+    to: "/meals",
   },
   {
     title: "EN SERİNLETİCİ İÇECEKLERİMİZ",
@@ -23,7 +24,7 @@ const cardData: ICardData[] = [
       "Taze meyve ve doğal malzemelerle hazırlanan kokteyllerimizle, serinletici ve ferahlatıcı bir deneyim sizi bekliyor. İçeceklerimizin her yudumunda tazeliği hissedin.",
     buttonContent: "Menüyü İncele",
     image: cocktailImage,
-    to: "/drinks"
+    to: "/drinks",
   },
 ];
 
@@ -43,6 +44,11 @@ const Home = () => {
             />
           ))}
         </Flex>
+        <Text fontWeight="bold">SICAK LEZZETLER</Text>
+        <XMealSlider />
+        <Divider />
+        <Text fontWeight="bold">ICECEKLER</Text>
+        <XCocktailSlider />
       </XContainer>
     </>
   );
