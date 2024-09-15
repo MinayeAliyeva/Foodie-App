@@ -25,5 +25,5 @@ const mealsApi = createApi({
   }),
 });
 
-export const { useFetchMealsQuery } = mealsApi;
+export const {  } = mealsApi;
 export default mealsApi;

@@ -3,8 +3,7 @@ import { Layout, Row, Col } from "antd";
 import NavBar from "./navbar/NavBar";
 import TopicMenu from "./TopicMenu";
 import { XSideBar } from "./sidebar/XSideBar";
-import { useFetchCocktailsQuery, useFetchMealsQuery } from "../../store";
-import { MealsResponse } from "../../store/apis/mealsApi";
+import { useFetchCocktailsQuery, } from "../../store";
 import XCard from "../../shared/components/XCard";
 import { CocktailsResponse } from "../../store/apis/coctailApi";
 

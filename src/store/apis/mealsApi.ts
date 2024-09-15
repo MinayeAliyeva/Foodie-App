@@ -26,17 +26,21 @@ const mealsApi = createApi({
   reducerPath: "meals",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
-    //www.themealdb.com/api/json/v1/1/categories.php
   }),
   endpoints: (builder) => ({
-    fetchMeals: builder.query<MealsResponse, void>({
-      query: () => `search.php?s=`,
+    getMeals: builder.query<MealsResponse, string | void>({
+      query: (catagorie = "") => `search.php?s=${catagorie}`,
     }),
-    fetchMealsByCatagories: builder.query<IMealCatagories, void>({
+    getMealsByCatagories: builder.query<IMealCatagories, void>({
       query: () => `categories.php`,
     }),
   }),
 });
 
-export const { useFetchMealsQuery, useFetchMealsByCatagoriesQuery } = mealsApi;
+export const {
+  useGetMealsQuery,
+  useLazyGetMealsQuery,
+  useGetMealsByCatagoriesQuery,
+} = mealsApi;
+
 export default mealsApi;

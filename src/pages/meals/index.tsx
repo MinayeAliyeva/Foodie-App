@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout, Row, Col } from "antd";
 import NavBar from "./navbar/NavBar";
 import TopicMenu from "./TopicMenu";
 import { XSideBar } from "./sidebar/XSideBar";
-import { useFetchMealsQuery } from "../../store";
-import { MealsResponse } from "../../store/apis/mealsApi";
+import { MealsResponse, useLazyGetMealsQuery } from "../../store/apis/mealsApi";
 import XCard from "../../shared/components/XCard";
 
 export const Meals = () => {
@@ -13,11 +12,14 @@ export const Meals = () => {
   const [selectedKey, setSelectedKey] = useState("0");
 
   //FETCHING MEALS
-  const { data, error, isLoading } = useFetchMealsQuery<{
+  const [getMeals, { data, error, isLoading }] = useLazyGetMealsQuery<{
     data: MealsResponse;
     error: string;
     isLoading: boolean;
   }>();
+  useEffect(() => {
+    getMeals();
+  }, []);
   console.log("data", data);
   const meals = data?.meals;
   const changeSelectedKey = (event: any) => {
@@ -32,17 +34,19 @@ export const Meals = () => {
       changeSelectedKey={changeSelectedKey}
     />
   );
-
+  const getCatagorieData = (catagorie: string) => {
+    getMeals( catagorie );
+  };
   return (
     <>
       <NavBar menu={Menu} />
       <Layout>
-        <XSideBar menu={Menu} />
+        <XSideBar getCatagorieData={getCatagorieData} />
         <Layout.Content className="content">
           <Row gutter={[16, 16]}>
             {meals?.map((meal) => (
               <Col span={6} key={meal.idMeal}>
-                <XCard meal={meal}  />
+                <XCard meal={meal} />
               </Col>
             ))}
           </Row>

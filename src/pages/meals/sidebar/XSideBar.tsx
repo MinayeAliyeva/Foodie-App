@@ -8,28 +8,9 @@ import {
   AccordionPanel,
   Box,
 } from "@chakra-ui/react";
-import {
-  IMealCatagorie,
-  IMealCatagories,
-  useFetchMealsByCatagoriesQuery,
-} from "../../../store/apis/mealsApi";
-import { useEffect, useState } from "react";
-import { minMealCatagorieLength } from "../data";
+import Catagorie from "./Catagorie";
 
-export const XSideBar = ({ menu }: any) => {
-  const { data: catagorieData } = useFetchMealsByCatagoriesQuery<{
-    data: IMealCatagories;
-  }>();
-  const [catagorieState, setCatagorieState] = useState<IMealCatagorie[]>([]);
-  useEffect(() => {
-    getCatagorie(catagorieData?.categories);
-  }, [catagorieData]);
-  const getCatagorie = (categories?: IMealCatagorie[], size: number = 5) => {
-    const data = categories?.slice(0, size)!;
-    setCatagorieState(data);
-  };
-  const checkingEquality =
-    catagorieState?.length === catagorieData?.categories?.length;
+export const XSideBar = ({ getCatagorieData }: any) => {
   return (
     <Layout.Sider
       className="sidebar"
@@ -39,46 +20,7 @@ export const XSideBar = ({ menu }: any) => {
       trigger={null}
     >
       <Accordion defaultIndex={[0, 1]} allowMultiple>
-        <AccordionItem>
-          <h2>
-            <AccordionButton>
-              <Box as="span" flex="1" textAlign="left">
-                Katagoriler
-              </Box>
-
-              <AccordionIcon />
-            </AccordionButton>
-          </h2>
-          <AccordionPanel pb={4}>
-            <Input placeholder="Axtar" />
-            <Box
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-            >
-              {catagorieState?.map((catagorie: any) => (
-                <Box>
-                  <Checkbox
-                    key={catagorie?.idCategory}
-                    value={catagorie?.strCategory}
-                  >
-                    {catagorie?.strCategory}
-                  </Checkbox>
-                </Box>
-              ))}
-            </Box>
-            <Button
-              onClick={() =>
-                getCatagorie(
-                  catagorieData?.categories,
-                  checkingEquality ? minMealCatagorieLength : catagorieData?.categories?.length
-                )
-              }
-            >
-              {catagorieState?.length === catagorieData?.categories?.length
-                ? "Gizle"
-                : " Hamisini gosder"}
-            </Button>
-          </AccordionPanel>
-        </AccordionItem>
+        <Catagorie getCatagorieData={getCatagorieData} />
 
         <AccordionItem>
           <h2>
