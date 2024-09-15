@@ -1,5 +1,4 @@
 import Slider from "react-slick";
-import { settings } from "../constands";
 import {
   Box,
   Image,
@@ -10,7 +9,8 @@ import {
   Center,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { useFetchMealsQuery } from "../store";
+import { useFetchMealsQuery } from "../../store";
+import { settings } from "../../constands";
 
 export const XMealSlider = () => {
   const { data, error, isLoading } = useFetchMealsQuery();

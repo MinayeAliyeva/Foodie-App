@@ -1,5 +1,4 @@
 import Slider from "react-slick";
-import { settings } from "../constands";
 import {
   Box,
   Image,
@@ -10,7 +9,8 @@ import {
   Center,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { useFetchCocktailsQuery } from "../store";
+import { useFetchCocktailsQuery } from "../../store";
+import { settings } from "../../constands";
 
 export const XCocktailSlider = () => {
   const { data, error, isLoading } = useFetchCocktailsQuery();

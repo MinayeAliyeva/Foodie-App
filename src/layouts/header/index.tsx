@@ -1,4 +1,3 @@
-import XContainer from "../../components/XContainer";
 import {
   Flex,
   Input,
@@ -8,12 +7,13 @@ import {
   InputRightElement,
   Button,
 } from "@chakra-ui/react";
-import logo from "../../assets/images/logo.png"
+import logo from "../../assets/images/logo.png";
 import { FaPhoneAlt, FaSearch, FaUser } from "react-icons/fa";
 import { IoMdMail } from "react-icons/io";
-import { FaLocationDot } from "react-icons/fa6"; // Lupa ikonu
+import { FaLocationDot } from "react-icons/fa6"; 
 import { FaSignInAlt } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
+import XContainer from "../../shared/components/XContainer";
 
 const Header = () => {
   return (
@@ -75,7 +75,10 @@ const Header = () => {
       </XContainer>
       <XContainer width="95%">
         <Flex align="center" justify="space-between">
-          <img width="70px" src={logo} alt="" />
+          <Link href="/">
+            {" "}
+            <img width="70px" src={logo} alt="" />
+          </Link>
           <InputGroup size="lg" width="500px">
             <InputRightElement pointerEvents="none">
               <FaSearch color="gray.300" />
@@ -121,6 +124,10 @@ const Header = () => {
       </XContainer>
       <XContainer bg="rgb(254, 246, 246)" width="100%">
         <Flex align="center" justifyContent="center" gap="10px">
+          <NavLink to="/" style={{ fontWeight: "bold" }}>
+            Ana Sayfa
+          </NavLink>
+          <Text>|</Text>
           <NavLink to="/meals" style={{ fontWeight: "bold" }}>
             Yemekler
           </NavLink>

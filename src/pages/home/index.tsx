@@ -1,13 +1,13 @@
 import React from "react";
-import XContainer from "../../components/XContainer";
-import XCard from "../../components/XCard";
 import { Divider, Flex, Text } from "@chakra-ui/react";
 import { ICardData } from "../../modules";
 import meatImage from "../../assets/images/meat.jpg";
 import cocktailImage from "../../assets/images/cocktail.jpg";
-import { XMealSlider } from "../../components/XMealSlider";
-import { XCocktailSlider } from "../../components/XCocktailSlider";
 import { FaArrowUp } from "react-icons/fa";
+import XContainer from "../../shared/components/XContainer";
+import XCard from "../../shared/components/XCard";
+import { XMealSlider } from "../../shared/components/XMealSlider";
+import { XCocktailSlider } from "../../shared/components/XCocktailSlider";
 
 const cardData: ICardData[] = [
   {

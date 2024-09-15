@@ -1,5 +1,4 @@
 import React from "react";
-import XContainer from "../../components/XContainer";
 import {
   Box,
   Flex,
@@ -13,6 +12,7 @@ import { IoMdMail } from "react-icons/io";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaArrowUp } from "react-icons/fa";
 import logo from "../../assets/images/logo.png"
+import XContainer from "../../shared/components/XContainer";
 const Footer = () => {
   const columnWidth = useBreakpointValue({ base: "100%", md: "30%" });
 
