@@ -24,7 +24,7 @@ const cardData: ICardData[] = [
       "Taze meyve ve doğal malzemelerle hazırlanan kokteyllerimizle, serinletici ve ferahlatıcı bir deneyim sizi bekliyor. İçeceklerimizin her yudumunda tazeliği hissedin.",
     buttonContent: "Menüyü İncele",
     image: cocktailImage,
-    to: "/drinks",
+    to: "/cocktails",
   },
 ];
 

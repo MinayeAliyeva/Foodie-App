@@ -41,8 +41,8 @@ export const Meals = () => {
         <Layout.Content className="content">
           <Row gutter={[16, 16]}>
             {meals?.map((meal) => (
-              <Col span={8} key={meal.idMeal}>
-                <XCard meal={meal} />
+              <Col span={6} key={meal.idMeal}>
+                <XCard meal={meal}  />
               </Col>
             ))}
           </Row>
