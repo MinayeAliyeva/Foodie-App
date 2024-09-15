@@ -4,6 +4,7 @@ import Home from "../pages/home";
 import { MyRouterObject } from "../modules";
 import { Meals } from "../pages/meals";
 import { Drinks } from "../pages/drinks";
+import Favotites from "../pages/favorites";
 
 export const routes: MyRouterObject[] = [
   {
@@ -25,6 +26,10 @@ export const routes: MyRouterObject[] = [
       {
         path: "cocktails",
         element: <Drinks />,
+      },
+      {
+        path: "favorites",
+        element: <Favotites/>
       },
     ],
   },

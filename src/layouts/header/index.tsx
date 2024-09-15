@@ -135,6 +135,10 @@ const Header = () => {
           <NavLink style={{ fontWeight: "bold" }} to="/cocktails">
             Icecekler
           </NavLink>
+          <Text>|</Text>
+          <NavLink style={{ fontWeight: "bold" }} to="/favorites">
+            Sevimliler
+          </NavLink>
         </Flex>
       </XContainer>
     </>

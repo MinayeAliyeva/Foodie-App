@@ -42,7 +42,7 @@ export const Drinks = () => {
         <Layout.Content className="content">
           <Row gutter={[16, 16]}>
             {drinks?.map((drink) => (
-              <Col span={8} key={drink?.idDrink}>
+              <Col span={6} key={drink?.idDrink}>
                 <XCard drink={drink} />
               </Col>
             ))}
