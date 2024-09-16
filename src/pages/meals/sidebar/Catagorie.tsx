@@ -17,24 +17,22 @@ import {
 import { minMealCatagorieLength } from "../data";
 
 interface IProps {
-  getCatagorieData: (catagorie: string) => void;
+  getCatagorieData: (catagorie: string[]) => void;
 }
+
 const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
-  const [selectedCatagorie, setSelectedCatagorie] = useState<string | null>(
-    null
-  );
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const { data: catagorieData } = useGetMealsByCatagoriesQuery<{
     data: IMealCatagories;
   }>();
   const [catagorieState, setCatagorieState] = useState<IMealCatagorie[]>([]);
   const [value, setValue] = useState("");
 
-useEffect(() => {
-  if (catagorieData?.categories) {
-    getCatagorie(catagorieData.categories);
-  }
-}, [catagorieData]);
-
+  useEffect(() => {
+    if (catagorieData?.categories) {
+      getCatagorie(catagorieData.categories);
+    }
+  }, [catagorieData]);
 
   const getCatagorie = (categories?: IMealCatagorie[], size: number = 5) => {
     if (!categories) return;
@@ -44,14 +42,16 @@ useEffect(() => {
 
   const handleChangeChecBox = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedValue = event.target.value;
-
-    if (selectedCatagorie === selectedValue) {
-      setSelectedCatagorie(null);
-      getCatagorieData("");
-    } else {
-      setSelectedCatagorie(selectedValue);
-      getCatagorieData(selectedValue);
-    }
+    setSelectedCategories((prevSelected) =>
+      prevSelected.includes(selectedValue)
+        ? prevSelected.filter((item) => item !== selectedValue)
+        : [...prevSelected, selectedValue]
+    );
+    getCatagorieData(
+      selectedCategories.includes(selectedValue)
+        ? selectedCategories.filter((item) => item !== selectedValue)
+        : [...selectedCategories, selectedValue]
+    );
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,26 +64,29 @@ useEffect(() => {
 
   const checkingEquality =
     catagorieState?.length === catagorieData?.categories?.length;
+  console.log("selectedCategories", selectedCategories);
 
   return (
     <AccordionItem>
       <h2>
         <AccordionButton>
           <Box as="span" flex="1" textAlign="left">
-            Katagoriler
+            Kategoriler
           </Box>
           <AccordionIcon />
         </AccordionButton>
       </h2>
       <AccordionPanel pb={4}>
-        <Input placeholder="Axtar" onChange={handleChange} value={value} />
+        <Input placeholder="Ara" onChange={handleChange} value={value} />
         <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {filteredCatagories?.map((catagorie) => (
             <Box key={catagorie?.idCategory}>
               <Checkbox
                 value={catagorie?.strCategory}
                 onChange={handleChangeChecBox}
-                isChecked={selectedCatagorie === catagorie?.strCategory}
+                isChecked={selectedCategories.includes(
+                  catagorie?.strCategory || ""
+                )}
               >
                 {catagorie?.strCategory}
               </Checkbox>
@@ -107,7 +110,7 @@ useEffect(() => {
             )
           }
         >
-          {checkingEquality ? "Gizle" : "Hamısını göstər"}
+          {checkingEquality ? "Gizle" : "Hepsini Göster"}
         </Button>
       </AccordionPanel>
     </AccordionItem>
