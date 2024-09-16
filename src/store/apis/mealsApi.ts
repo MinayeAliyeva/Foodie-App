@@ -21,6 +21,9 @@ export interface IMealCatagorie {
 export interface IMealCatagories {
   categories: IMealCatagorie[];
 }
+export interface IMealDetail {
+  meals: Meal[];
+}
 const BASE_URL = "https://www.themealdb.com/api/json/v1/1/";
 const mealsApi = createApi({
   reducerPath: "meals",
@@ -34,6 +37,9 @@ const mealsApi = createApi({
     getMealsByCatagories: builder.query<IMealCatagories, void>({
       query: () => `categories.php`,
     }),
+    getMealDeatail: builder.query<IMealDetail, string | void>({
+      query: (detailId) => `lookup.php?i=${detailId}`,
+    }),
   }),
 });
 
@@ -41,6 +47,7 @@ export const {
   useGetMealsQuery,
   useLazyGetMealsQuery,
   useGetMealsByCatagoriesQuery,
+  useLazyGetMealDeatailQuery,
 } = mealsApi;
 
 export default mealsApi;

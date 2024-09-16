@@ -15,8 +15,9 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaArrowRightLong } from "react-icons/fa6";
+import { useLazyGetMealDeatailQuery } from "../../store/apis/mealsApi";
 
 export interface IMeal {
   idMeal?: string;
@@ -59,7 +60,8 @@ const XCard = ({
   drink,
 }: XCardProps) => {
   const [isLiked, setIsLiked] = useState<boolean>(false);
-
+  const [getDetail, { data }] = useLazyGetMealDeatailQuery();
+  const navigate=useNavigate();
   useEffect(() => {
     const likedItems = JSON.parse(localStorage.getItem("likes") || "[]");
     const currentItem = meal || drink;
@@ -90,6 +92,7 @@ const XCard = ({
     localStorage.setItem("likes", JSON.stringify(updatedLikes));
     setIsLiked(!isItemLiked);
   };
+  console.log("detail data", data);
 
   const itemTitle = meal?.strMeal || drink?.strDrink;
   const itemThumb = meal?.strMealThumb || drink?.strDrinkThumb;
@@ -99,7 +102,12 @@ const XCard = ({
     meal?.strIngredient2 || drink?.strIngredient2,
     meal?.strIngredient3 || drink?.strIngredient3,
   ].filter(Boolean);
-
+  const handleDetail = (id: string | undefined) => {
+    if (id) {
+      console.log("Detail for ID:", id);
+      navigate(`/detail/${id}`); 
+    }
+  };
 
   return (
     <Card
@@ -144,7 +152,7 @@ const XCard = ({
       </CardBody>
       <Divider />
       <CardFooter p="2">
-        <Flex align="center" justify="space-between">
+        <Flex align="center" justify="space-between" gap="30px">
           <Button
             leftIcon={isLiked ? <FaHeart /> : <FaRegHeart />}
             onClick={handleLike}
@@ -154,6 +162,9 @@ const XCard = ({
             size="sm"
           >
             {isLiked ? "Liked" : "Like"}
+          </Button>
+          <Button onClick={() => handleDetail(meal?.idMeal || drink?.idDrink)}>
+            Detail
           </Button>
           {to && (
             <ButtonGroup spacing="1">
