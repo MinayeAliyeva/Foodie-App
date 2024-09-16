@@ -42,12 +42,21 @@ export const Meals = () => {
 
   const [getAreaMeals] = useLazyGetMealsByAreaQuery();
 
-  const getAreaData = async (area: string) => {
+  const getAreaData = async (areas: string[]) => {
+    console.log("area", areas);
     try {
-      const result = await getAreaMeals(area).unwrap(); // unwrap() ile veriyi direkt alabiliriz
-      setMealsAll(result.meals); // Burada result.meaals yerine result.meals olmalıydı
+      if (areas.length === 0) {
+        await getMeals();
+        setMealsAll([]);
+      } else {
+        const mealPromises = areas.map((area: any) => getAreaMeals(area));
+        const meals = await Promise.all(mealPromises);
+        console.log("meals", meals);
+
+        setMealsAll(meals.flatMap((response) => response?.data?.meals || []));
+      }
     } catch (error) {
-      console.error("Error fetching meals by area:", error);
+      console.error("Error fetching category data:", error);
     }
   };
 
