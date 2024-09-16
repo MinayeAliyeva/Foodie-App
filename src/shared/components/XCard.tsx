@@ -92,7 +92,6 @@ const XCard = ({
     localStorage.setItem("likes", JSON.stringify(updatedLikes));
     setIsLiked(!isItemLiked);
   };
-  console.log("detail data", data);
 
   const itemTitle = meal?.strMeal || drink?.strDrink;
   const itemThumb = meal?.strMealThumb || drink?.strDrinkThumb;

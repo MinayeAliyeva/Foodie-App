@@ -9,18 +9,21 @@ import {
   Box,
 } from "@chakra-ui/react";
 import Catagorie from "./Catagorie";
-import { useGetMealsByAreaQuery } from "../../../store/apis/mealsApi";
 import { useState } from "react";
+import { useGetMealsAreaQuery } from "../../../store/apis/mealsApi";
 
-export const XSideBar = ({ getCatagorieData }: any) => {
+export const XSideBar = ({ getCatagorieData,getAreaData }: any) => {
   const [areaState, setAreaState] = useState([]);
-  const { data: areaData } = useGetMealsByAreaQuery();
+  const { data: areaData } = useGetMealsAreaQuery();
   // const getArea = (areas:any, size: number = 5) => {
   //   if (!areas) return;
   //   const data = categories?.slice(0, size);
   //   setCatagorieState(data);
   // };
-
+  const handleChangeAreaCheckbox = (event: any) => {
+    const areaValue = event.target.value;
+    getAreaData(areaValue)
+  };
   return (
     <Layout.Sider
       className="sidebar"
@@ -47,7 +50,12 @@ export const XSideBar = ({ getCatagorieData }: any) => {
             >
               {areaData?.meals?.map((area: any) => (
                 <Box>
-                  <Checkbox>{area?.strArea}</Checkbox>
+                  <Checkbox
+                    value={area?.strArea}
+                    onChange={handleChangeAreaCheckbox}
+                  >
+                    {area?.strArea}
+                  </Checkbox>
                 </Box>
               ))}
             </Box>
