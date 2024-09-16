@@ -105,7 +105,7 @@ const XCard = ({
   const handleDetail = (id: string | undefined) => {
     if (id) {
       console.log("Detail for ID:", id);
-      navigate(`/detail/${id}`); 
+      navigate(`/detail/${id}`); // navigate ile yönlendirme yapın
     }
   };
 

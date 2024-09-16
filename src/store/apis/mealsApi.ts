@@ -40,6 +40,9 @@ const mealsApi = createApi({
     getMealDeatail: builder.query<IMealDetail, string | void>({
       query: (detailId) => `lookup.php?i=${detailId}`,
     }),
+    getMealsByArea: builder.query<IMealDetail, string | void>({
+      query: (list) => `list.php?a=${list}`,
+    }),
   }),
 });
 
@@ -48,6 +51,7 @@ export const {
   useLazyGetMealsQuery,
   useGetMealsByCatagoriesQuery,
   useLazyGetMealDeatailQuery,
+  useGetMealsByAreaQuery
 } = mealsApi;
 
 export default mealsApi;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Layout, Row, Col } from "antd";
+import { Layout, Row } from "antd";
 import NavBar from "./navbar/NavBar";
 import TopicMenu from "./TopicMenu";
 import { XSideBar } from "./sidebar/XSideBar";
@@ -10,33 +10,37 @@ export const Meals = () => {
   const topics = ["First topic", "Second topic", "Third topic"];
   const [contentIndex, setContentIndex] = useState(0);
   const [selectedKey, setSelectedKey] = useState("0");
+  const [mealsAll, setMealsAll] = useState<any[]>([]);
 
-  //FETCHING MEALS
   const [getMeals, { data, error, isLoading }] = useLazyGetMealsQuery<{
     data: MealsResponse;
     error: string;
     isLoading: boolean;
   }>();
+
   useEffect(() => {
     getMeals();
-  }, []);
-  console.log("data", data);
+  }, [getMeals]);
+
   const meals = data?.meals;
-  const changeSelectedKey = (event: any) => {
-    const key = event.key;
-    setSelectedKey(key);
-    setContentIndex(+key);
+
+  const Menu = <TopicMenu topics={topics} selectedKey={selectedKey} />;
+
+  const getCatagorieData = async (categories: string[]) => {
+    try {
+      if (categories.length === 0) {
+        await getMeals();
+        setMealsAll([]);
+      } else {
+        const mealPromises = categories.map((category) => getMeals(category));
+        const meals = await Promise.all(mealPromises);
+        setMealsAll(meals);
+      }
+    } catch (error) {
+      console.error("Error fetching category data:", error);
+    }
   };
-  const Menu = (
-    <TopicMenu
-      topics={topics}
-      selectedKey={selectedKey}
-      changeSelectedKey={changeSelectedKey}
-    />
-  );
-  const getCatagorieData = (catagorie: string) => {
-    getMeals( catagorie );
-  };
+
   return (
     <>
       <NavBar menu={Menu} />
@@ -44,11 +48,15 @@ export const Meals = () => {
         <XSideBar getCatagorieData={getCatagorieData} />
         <Layout.Content className="content">
           <Row gutter={[16, 16]}>
-            {meals?.map((meal) => (
-              <Col span={6} key={meal.idMeal}>
-                <XCard meal={meal} />
-              </Col>
-            ))}
+            {mealsAll.length > 0
+              ? mealsAll.map((mealResponse: any) =>
+                  mealResponse?.data?.meals?.map((meal: any) => (
+                    <XCard key={meal.idMeal} meal={meal} />
+                  ))
+                )
+              : meals?.map((meal: any) => (
+                  <XCard key={meal.idMeal} meal={meal} />
+                ))}
           </Row>
         </Layout.Content>
       </Layout>
