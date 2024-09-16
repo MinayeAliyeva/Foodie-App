@@ -5,6 +5,7 @@ import { MyRouterObject } from "../modules";
 import { Meals } from "../pages/meals";
 import { Drinks } from "../pages/drinks";
 import Favotites from "../pages/favorites";
+import Detail from "../pages/detail";
 
 export const routes: MyRouterObject[] = [
   {
@@ -29,7 +30,11 @@ export const routes: MyRouterObject[] = [
       },
       {
         path: "favorites",
-        element: <Favotites/>
+        element: <Favotites />,
+      },
+      {
+        path: "detail/:id",
+        element: <Detail />,
       },
     ],
   },
