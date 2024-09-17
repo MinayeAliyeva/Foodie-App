@@ -4,8 +4,8 @@ import NavBar from "./navbar/NavBar";
 import TopicMenu from "./TopicMenu";
 import { XSideBar } from "./sidebar/XSideBar";
 import {
-  MealsResponse,
   useLazyGetMealsByAreaQuery,
+  useLazyGetMealsByIngredientsQuery,
   useLazyGetMealsQuery,
 } from "../../store/apis/mealsApi";
 import XCard from "../../shared/components/XCard";
@@ -15,7 +15,19 @@ export const Meals = () => {
   const [selectedKey, setSelectedKey] = useState("0");
   const [mealsAll, setMealsAll] = useState<any[]>([]);
 
-  const [getMeals, { data, error, isLoading }] = useLazyGetMealsQuery();
+  const [state, setState] = useState<{
+    category: string[];
+    area: string[];
+    ingredient: string[];
+  }>({
+    category: [],
+    area: [],
+    ingredient: [],
+  });
+
+  const [getMeals, { data }] = useLazyGetMealsQuery();
+  const [getmealsIngredient, { data: ingredientData }] =
+    useLazyGetMealsByIngredientsQuery<any>();
 
   useEffect(() => {
     getMeals();
@@ -31,9 +43,14 @@ export const Meals = () => {
         await getMeals();
         setMealsAll([]);
       } else {
-        const mealPromises = categories.map((category) => getMeals(category));
+        const mealPromises = categories.map((category) =>
+          getMeals(category, true)
+        );
         const meals = await Promise.all(mealPromises);
-        setMealsAll(meals.flatMap((response) => response?.data?.meals || []));
+        const mealsData = meals.flatMap(
+          (response) => response?.data?.meals || []
+        );
+        setMealsAll((prev) => [...prev, ...mealsData]);
       }
     } catch (error) {
       console.error("Error fetching category data:", error);
@@ -43,20 +60,70 @@ export const Meals = () => {
   const [getAreaMeals] = useLazyGetMealsByAreaQuery();
 
   const getAreaData = async (areas: string[]) => {
-    // console.log("area", areas);
     try {
       if (areas.length === 0) {
         await getMeals();
         setMealsAll([]);
       } else {
-        const mealPromises = areas.map((area: any) => getAreaMeals(area));
+        const mealPromises = areas.map((area: any) => getAreaMeals(area, true));
         const meals = await Promise.all(mealPromises);
-        //console.log("meals", meals);
-
-        setMealsAll(meals.flatMap((response) => response?.data?.meals || []));
+        console.log("56meals", meals);
+        const mealsData = meals.flatMap(
+          (response) => response?.data?.meals || []
+        );
+        setMealsAll((prev) => [...prev, ...mealsData]);
       }
     } catch (error) {
       console.error("Error fetching category data:", error);
+    }
+  };
+  const getIngredientData = async (ingredients: string[]) => {
+    try {
+      if (ingredients.length === 0) {
+        await getMeals();
+        setMealsAll([]);
+      } else {
+        const mealPromises = ingredients?.map((ingredient: string) =>
+          getmealsIngredient(ingredient, true)
+        );
+        const meals = await Promise.all(mealPromises);
+        const mealsData = meals.flatMap(
+          (response) => response?.data?.meals || []
+        );
+        setMealsAll((prev) => [...prev, ...mealsData]);
+      }
+    } catch (error) {
+      console.error("Error fetching category data:", error);
+    }
+  };
+
+  const getSearchData = ({
+    value,
+    isChecked,
+    key,
+  }: {
+    value: string;
+    isChecked?: boolean;
+    key?: string;
+  }) => {
+    console.log({ value, isChecked, key });
+    if (state.category.find((val) => val !== value && isChecked)) {
+      // setState({...state.c});
+    }
+    // const category = [state.category.filter]
+    switch (key) {
+      case "s":
+        setState((prev) => ({ ...prev, category: [...prev.category, value] }));
+        break;
+      case "a":
+        setState((prev) => ({ ...prev, area: [...prev.area, value] }));
+        break;
+      case "i":
+        setState((prev) => ({
+          ...prev,
+          ingredient: [...prev.ingredient, value],
+        }));
+        break;
     }
   };
 
@@ -66,7 +133,8 @@ export const Meals = () => {
       <Layout>
         <XSideBar
           getAreaData={getAreaData}
-          getCatagorieData={getCatagorieData}
+          getCatagorieData={getSearchData}
+          getIngredientData={getIngredientData}
         />
         <Layout.Content className="content">
           <Row gutter={[16, 16]}>

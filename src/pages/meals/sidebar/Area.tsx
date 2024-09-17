@@ -10,13 +10,18 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useGetMealsAreaQuery } from "../../../store/apis/mealsApi";
+import { minMealAreaLength } from "../data";
 
 export const MealArea = ({ getAreaData }: any) => {
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [areasState, setAreasState] = useState<any>([]);
   const [value, setValue] = useState("");
   const { data: areaData } = useGetMealsAreaQuery();
-
+  useEffect(() => {
+    if (areaData?.meals) {
+      setAreasState(areaData.meals);
+    }
+  }, [areaData]);
   const handleChangeAreaCheckbox = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -44,10 +49,18 @@ export const MealArea = ({ getAreaData }: any) => {
   };
   useEffect(() => {
     if (areaData?.meals) {
-      setAreasState(areaData.meals);
+      getArea(areaData.meals);
     }
-  }, [areaData]);
-  const getArea = (arg: any) => {};
+  }, [areaData?.meals]);
+  const getArea = (areas: any, size: number = 5) => {
+    if (!areas) return;
+    console.log("areas",areas);
+    
+    const data = areas?.slice(0, size);
+    setAreasState(data);
+  };
+  const checkingEquality = areasState?.length === areaData?.meals?.length;
+  console.log("checkingEquality", checkingEquality);
 
   return (
     <AccordionItem>
@@ -81,9 +94,14 @@ export const MealArea = ({ getAreaData }: any) => {
             fontWeight: "bold",
             fontSize: "15px",
           }}
-          onClick={() => getArea(areaData?.meals)}
+          onClick={() =>
+            getArea(
+              areaData?.meals,
+              checkingEquality ? minMealAreaLength : areaData?.meals?.length
+            )
+          }
         >
-          Hamısını göstər
+          {checkingEquality ? "Gizle" : "Hepsini Göster"}
         </Button>
       </AccordionPanel>
     </AccordionItem>

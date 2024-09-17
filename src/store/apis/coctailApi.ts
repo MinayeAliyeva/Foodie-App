@@ -14,17 +14,25 @@ export interface CocktailsResponse {
   drinks: Cocktail[];
 }
 
+const BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/";
+const SEARCH_BY_URL = "search.php";
+
 const cocktailsApi = createApi({
   reducerPath: "cocktails",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://www.thecocktaildb.com/api/json/v1/1/",
+    baseUrl: BASE_URL,
   }),
   endpoints: (builder) => ({
-    fetchCocktails: builder.query<CocktailsResponse, void>({
-      query: () => `search.php?s=`,
+    getCoctails: builder.query<CocktailsResponse, string | void>({
+      query: (category = "") => ({
+        url: SEARCH_BY_URL,
+        params: {
+          s: category,
+        },
+      }),
+      keepUnusedDataFor: 60,
     }),
   }),
 });
-
-export const { useFetchCocktailsQuery } = cocktailsApi;
+export const { useGetCoctailsQuery } = cocktailsApi;
 export default cocktailsApi;

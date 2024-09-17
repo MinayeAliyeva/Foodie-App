@@ -16,4 +16,4 @@ export const store = configureStore({
 
 setupListeners(store.dispatch);
 export { useGetMealsQuery } from "./apis/mealsApi";
-export { useFetchCocktailsQuery } from "./apis/coctailApi";
+export { useGetCoctailsQuery } from "./apis/coctailApi";
