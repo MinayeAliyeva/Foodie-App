@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Layout, Row } from "antd";
 import NavBar from "./navbar/NavBar";
 import TopicMenu from "./TopicMenu";
@@ -13,7 +13,12 @@ import XCard from "../../shared/components/XCard";
 export const Meals = () => {
   const topics = ["First topic", "Second topic", "Third topic"];
   const [selectedKey, setSelectedKey] = useState("0");
-  const [mealsAll, setMealsAll] = useState<any[]>([]);
+  const [mealsAll, setMealsAll] = useState<any>({
+    catagories: [],
+    areas: [],
+  });
+
+  console.log("mealsAll", mealsAll);
 
   const [state, setState] = useState<{
     category: string[];
@@ -33,50 +38,10 @@ export const Meals = () => {
     getMeals();
   }, [getMeals]);
 
-  const meals = mealsAll.length > 0 ? mealsAll : data?.meals || [];
-
   const Menu = <TopicMenu topics={topics} selectedKey={selectedKey} />;
-
-  const getCatagorieData = async (categories: string[]) => {
-    try {
-      if (categories.length === 0) {
-        await getMeals();
-        setMealsAll([]);
-      } else {
-        const mealPromises = categories.map((category) =>
-          getMeals(category, true)
-        );
-        const meals = await Promise.all(mealPromises);
-        const mealsData = meals.flatMap(
-          (response) => response?.data?.meals || []
-        );
-        setMealsAll((prev) => [...prev, ...mealsData]);
-      }
-    } catch (error) {
-      console.error("Error fetching category data:", error);
-    }
-  };
 
   const [getAreaMeals] = useLazyGetMealsByAreaQuery();
 
-  const getAreaData = async (areas: string[]) => {
-    try {
-      if (areas.length === 0) {
-        await getMeals();
-        setMealsAll([]);
-      } else {
-        const mealPromises = areas.map((area: any) => getAreaMeals(area, true));
-        const meals = await Promise.all(mealPromises);
-        console.log("56meals", meals);
-        const mealsData = meals.flatMap(
-          (response) => response?.data?.meals || []
-        );
-        setMealsAll((prev) => [...prev, ...mealsData]);
-      }
-    } catch (error) {
-      console.error("Error fetching category data:", error);
-    }
-  };
   const getIngredientData = async (ingredients: string[]) => {
     try {
       if (ingredients.length === 0) {
@@ -90,7 +55,7 @@ export const Meals = () => {
         const mealsData = meals.flatMap(
           (response) => response?.data?.meals || []
         );
-        setMealsAll((prev) => [...prev, ...mealsData]);
+        setMealsAll((prev: any) => [...prev, ...mealsData]);
       }
     } catch (error) {
       console.error("Error fetching category data:", error);
@@ -104,42 +69,154 @@ export const Meals = () => {
   }: {
     value: string;
     isChecked?: boolean;
-    key?: string;
+    key?: "s" | "a" | "i";
   }) => {
     console.log({ value, isChecked, key });
-    if (state.category.find((val) => val !== value && isChecked)) {
-      // setState({...state.c});
-    }
-    // const category = [state.category.filter]
-    switch (key) {
-      case "s":
+    if (key === "s") {
+      if (isChecked) {
         setState((prev) => ({ ...prev, category: [...prev.category, value] }));
-        break;
-      case "a":
+      } else {
+        const filteredCatagory = state.category.filter(
+          (catagory) => catagory !== value
+        );
+
+        setState((prev) => ({ ...prev, category: filteredCatagory }));
+      }
+    } else if (key === "a") {
+      if (isChecked) {
         setState((prev) => ({ ...prev, area: [...prev.area, value] }));
-        break;
-      case "i":
+      } else {
+        const filteredArea = state.area.filter((area) => area !== value);
+        setState((prev) => ({ ...prev, area: filteredArea }));
+      }
+    } else if (key === "i") {
+      if (isChecked) {
         setState((prev) => ({
           ...prev,
           ingredient: [...prev.ingredient, value],
         }));
-        break;
+      } else {
+        const filteredIngredient = state.area.filter(
+          (ingredient) => ingredient !== value
+        );
+        setState((prev) => ({ ...prev, ingredient: filteredIngredient }));
+      }
     }
+
+    // switch (key) {
+    //   case "s":
+    //     setState((prev) => ({ ...prev, category: [...prev.category, value] }));
+    //     break;
+    //   case "a":
+    //     setState((prev) => ({ ...prev, area: [...prev.area, value] }));
+    //     break;
+    //   case "i":
+    //     setState((prev) => ({
+    //       ...prev,
+    //       ingredient: [...prev.ingredient, value],
+    //     }));
+    //     break;
+    // }
   };
+  console.log("mealsAll.cat", mealsAll?.catagories);
+  console.log("mealsAll.areas", mealsAll.areas);
+
+  const mealList = useMemo(() => {
+    // const combinedMeals = [
+    //   ...(mealsAll?.catagories || []),
+    //   ...(mealsAll.areas || []),
+    // ];
+    // const combinedMeals =   mealsAll.catagories?.length && mealsAll.areas?.length
+    //     ? mealsAll.catagories?.map((catagorie: any) => {
+    //         mealsAll.areas?.filter(
+    //           (area: any) => area?.idMeal === catagorie?.idMeal
+    //         );
+    //       })
+    //     : [...(mealsAll?.catagories || []), ...(mealsAll.areas || [])];
+    // console.log("combinedMeals", combinedMeals);
+    // return combinedMeals;
+    const sameIdMeals = mealsAll?.catagories?.filter((thumbnail: any) =>
+      mealsAll?.areas?.some((meal: any) => meal.idMeal === thumbnail.idMeal)
+    );
+    return sameIdMeals;
+  }, [mealsAll]);
+  console.log("sameIdMeals", mealList);
+
+  const meals = mealList?.length > 0 ? mealList : data?.meals || [];
+
+  useEffect(() => {
+    let showAllFilteredMeal = { catagories: [], areas: [] } as any;
+
+    const fetchCatagoryData = async () => {
+      try {
+        const mealPromises = state.category.map((catagory: string) =>
+          getMeals(catagory, true)
+        );
+        const meals = await Promise.all(mealPromises);
+
+        const mealsCatagoryResponse = meals.flatMap(
+          (mealObj) => mealObj?.data?.meals || []
+        );
+        setMealsAll((prev: any) => ({
+          ...prev,
+          catagories: mealsCatagoryResponse, // Eğer prev.categories undefined ise, boş bir diziyle başlatılır
+        }));
+        showAllFilteredMeal.catagories = mealsCatagoryResponse;
+      } catch (error) {
+        console.log("error");
+      }
+    };
+
+    const fetcAreaData = async () => {
+      try {
+        const areaPromises = state.area.map((area: string) =>
+          getAreaMeals(area, true)
+        );
+        const areas = await Promise.all(areaPromises);
+
+        const mealsAreaResponse = areas.flatMap(
+          (mealObj) => mealObj?.data?.meals || []
+        );
+        setMealsAll((prev: any) => ({
+          ...prev,
+          areas: mealsAreaResponse, // Eğer prev.categories undefined ise, boş bir diziyle başlatılır
+        }));
+        showAllFilteredMeal.areas = mealsAreaResponse;
+      } catch (error) {
+        console.log("error");
+      }
+    };
+    const combinedMeals = [
+      ...showAllFilteredMeal.catagories,
+      ...showAllFilteredMeal.areas,
+    ];
+    console.log("combinedMeals", combinedMeals);
+
+    if (state?.area?.length) {
+      fetcAreaData();
+    }
+    if (state.category?.length) {
+      fetchCatagoryData();
+    }
+    if (!state.category?.length && !state.area?.length) {
+      getMeals();
+      setMealsAll([]);
+    }
+  }, [state]);
 
   return (
     <>
       <NavBar menu={Menu} />
       <Layout>
         <XSideBar
-          getAreaData={getAreaData}
+          getAreaData={getSearchData}
           getCatagorieData={getSearchData}
           getIngredientData={getIngredientData}
         />
         <Layout.Content className="content">
           <Row gutter={[16, 16]}>
-            {meals.map((meal: any) => (
-              <XCard key={meal.idMeal} meal={meal} />
+            {meals?.map((meal: any) => (
+              <XCard key={meal?.idMeal} meal={meal} />
             ))}
           </Row>
         </Layout.Content>

@@ -32,7 +32,11 @@ const cocktailsApi = createApi({
       }),
       keepUnusedDataFor: 60,
     }),
+    getRandomCoctailQuery: builder.query<any, string | void>({
+      query: () => `random.php`,
+    }),
   }),
 });
-export const { useGetCoctailsQuery } = cocktailsApi;
+export const { useGetCoctailsQuery, useLazyGetRandomCoctailQueryQuery } =
+  cocktailsApi;
 export default cocktailsApi;

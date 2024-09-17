@@ -31,11 +31,16 @@ export const MealArea = ({ getAreaData }: any) => {
         ? prevSelected.filter((item) => item !== selectedValue)
         : [...prevSelected, selectedValue]
     );
-    getAreaData(
-      selectedAreas.includes(selectedValue)
-        ? selectedAreas.filter((item) => item !== selectedValue)
-        : [...selectedAreas, selectedValue]
-    );
+    getAreaData({
+      value: event.target.value,
+      isChecked: event.target.checked,
+      key: "a",
+    });
+    // getAreaData(
+    //   selectedAreas.includes(selectedValue)
+    //     ? selectedAreas.filter((item) => item !== selectedValue)
+    //     : [...selectedAreas, selectedValue]
+    // );
   };
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = event.target.value.toLowerCase();
@@ -54,13 +59,12 @@ export const MealArea = ({ getAreaData }: any) => {
   }, [areaData?.meals]);
   const getArea = (areas: any, size: number = 5) => {
     if (!areas) return;
-    console.log("areas",areas);
-    
+    console.log("areas", areas);
+
     const data = areas?.slice(0, size);
     setAreasState(data);
   };
   const checkingEquality = areasState?.length === areaData?.meals?.length;
-  console.log("checkingEquality", checkingEquality);
 
   return (
     <AccordionItem>
