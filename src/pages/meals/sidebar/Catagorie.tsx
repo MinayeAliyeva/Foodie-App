@@ -9,11 +9,7 @@ import {
   Input,
 } from "@chakra-ui/react";
 import React, { FC, useEffect, useState } from "react";
-import {
-  IMealCatagorie,
-  IMealCatagories,
-  useGetMealsByCatagoriesQuery,
-} from "../../../store/apis/mealsApi";
+import { IMealCategories, IMealCategory, useGetMealsByCategoriesQuery } from "../../../store/apis/mealsApi";
 import { minMealCatagorieLength } from "../data";
 
 interface IProps {
@@ -22,10 +18,10 @@ interface IProps {
 
 const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const { data: catagorieData } = useGetMealsByCatagoriesQuery<{
-    data: IMealCatagories;
+  const { data: catagorieData } = useGetMealsByCategoriesQuery<{
+    data: IMealCategories;
   }>();
-  const [catagorieState, setCatagorieState] = useState<IMealCatagorie[]>([]);
+  const [catagorieState, setCatagorieState] = useState<IMealCategory[]>([]);
   const [value, setValue] = useState("");
 
   useEffect(() => {
@@ -34,7 +30,7 @@ const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
     }
   }, [catagorieData]);
 
-  const getCatagorie = (categories?: IMealCatagorie[], size: number = 5) => {
+  const getCatagorie = (categories?: IMealCategory[], size: number = 5) => {
     if (!categories) return;
     const data = categories?.slice(0, size);
     setCatagorieState(data);
@@ -55,16 +51,17 @@ const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value.toLowerCase());
+    setValue(event.target.value);
+    const filteredCatagories = catagorieData?.categories.filter((catagorie) =>
+      catagorie?.strCategory
+        .toLowerCase()
+        .includes(event.target.value.toLowerCase())
+    );
+    setCatagorieState(filteredCatagories);
   };
-
-  const filteredCatagories = catagorieState.filter((catagorie) =>
-    catagorie?.strCategory.toLowerCase().includes(value)
-  );
 
   const checkingEquality =
     catagorieState?.length === catagorieData?.categories?.length;
-  console.log("selectedCategories", selectedCategories);
 
   return (
     <AccordionItem>
@@ -79,7 +76,7 @@ const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
       <AccordionPanel pb={4}>
         <Input placeholder="Ara" onChange={handleChange} value={value} />
         <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          {filteredCatagories?.map((catagorie) => (
+          {catagorieState?.map((catagorie) => (
             <Box key={catagorie?.idCategory}>
               <Checkbox
                 value={catagorie?.strCategory}

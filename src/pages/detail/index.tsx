@@ -1,10 +1,10 @@
 import { useParams } from "react-router";
 import { useEffect } from "react";
-import { useLazyGetMealDeatailQuery } from "../../store/apis/mealsApi";
+import {  useLazyGetMealDetailQuery } from "../../store/apis/mealsApi";
 
 const Detail = () => {
   const { id } = useParams<{ id: string }>();
-  const [getDetail, { data, isLoading, error }] = useLazyGetMealDeatailQuery();
+  const [getDetail, { data, isLoading, error }] = useLazyGetMealDetailQuery();
 
   const detailMeal = data?.meals;
   console.log("detailMeal", detailMeal);

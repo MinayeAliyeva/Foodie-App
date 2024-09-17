@@ -17,7 +17,7 @@ import {
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowRightLong } from "react-icons/fa6";
-import { useLazyGetMealDeatailQuery } from "../../store/apis/mealsApi";
+import {  useLazyGetMealDetailQuery } from "../../store/apis/mealsApi";
 
 export interface IMeal {
   idMeal?: string;
@@ -60,7 +60,7 @@ const XCard = ({
   drink,
 }: XCardProps) => {
   const [isLiked, setIsLiked] = useState<boolean>(false);
-  const [getDetail, { data }] = useLazyGetMealDeatailQuery();
+  const [getDetail, { data }] = useLazyGetMealDetailQuery();
   const navigate=useNavigate();
   useEffect(() => {
     const likedItems = JSON.parse(localStorage.getItem("likes") || "[]");
