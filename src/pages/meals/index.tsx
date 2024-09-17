@@ -43,7 +43,7 @@ export const Meals = () => {
   const [getAreaMeals] = useLazyGetMealsByAreaQuery();
 
   const getAreaData = async (areas: string[]) => {
-    console.log("area", areas);
+    // console.log("area", areas);
     try {
       if (areas.length === 0) {
         await getMeals();
@@ -51,7 +51,7 @@ export const Meals = () => {
       } else {
         const mealPromises = areas.map((area: any) => getAreaMeals(area));
         const meals = await Promise.all(mealPromises);
-        console.log("meals", meals);
+        //console.log("meals", meals);
 
         setMealsAll(meals.flatMap((response) => response?.data?.meals || []));
       }

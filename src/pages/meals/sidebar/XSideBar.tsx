@@ -12,6 +12,7 @@ import Catagorie from "./Catagorie";
 import { useState } from "react";
 import { useGetMealsAreaQuery } from "../../../store/apis/mealsApi";
 import MealArea from "./Area";
+import MealIngredients from "./MealIngredients";
 
 export const XSideBar = ({ getCatagorieData, getAreaData }: any) => {
   return (
@@ -25,6 +26,7 @@ export const XSideBar = ({ getCatagorieData, getAreaData }: any) => {
       <Accordion defaultIndex={[0, 1]} allowMultiple>
         <Catagorie getCatagorieData={getCatagorieData} />
         <MealArea getAreaData={getAreaData} />
+        <MealIngredients  />
       </Accordion>
     </Layout.Sider>
   );

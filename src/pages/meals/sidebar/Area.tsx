@@ -8,13 +8,14 @@ import {
   Checkbox,
   Input,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useGetMealsAreaQuery } from "../../../store/apis/mealsApi";
 
-export const MealArea = ({ getCatagorieData, getAreaData }: any) => {
+export const MealArea = ({ getAreaData }: any) => {
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
+  const [areasState, setAreasState] = useState<any>([]);
+  const [value, setValue] = useState("");
   const { data: areaData } = useGetMealsAreaQuery();
-
 
   const handleChangeAreaCheckbox = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -31,6 +32,22 @@ export const MealArea = ({ getCatagorieData, getAreaData }: any) => {
         : [...selectedAreas, selectedValue]
     );
   };
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchValue = event.target.value.toLowerCase();
+    setValue(searchValue);
+
+    const filteredAreas = areaData?.meals?.filter((area: any) =>
+      area?.strArea.toLowerCase().includes(searchValue)
+    );
+
+    setAreasState(filteredAreas || []);
+  };
+  useEffect(() => {
+    if (areaData?.meals) {
+      setAreasState(areaData.meals);
+    }
+  }, [areaData]);
+  const getArea = (arg: any) => {};
 
   return (
     <AccordionItem>
@@ -43,9 +60,9 @@ export const MealArea = ({ getCatagorieData, getAreaData }: any) => {
         </AccordionButton>
       </h2>
       <AccordionPanel pb={4}>
-        <Input placeholder="Axtar" />
+        <Input placeholder="Axtar" onChange={handleChange} />
         <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          {areaData?.meals?.map((area: any) => (
+          {areasState?.map((area: any) => (
             <Box key={area?.strArea}>
               <Checkbox
                 value={area?.strArea}
@@ -64,6 +81,7 @@ export const MealArea = ({ getCatagorieData, getAreaData }: any) => {
             fontWeight: "bold",
             fontSize: "15px",
           }}
+          onClick={() => getArea(areaData?.meals)}
         >
           Hamısını göstər
         </Button>
