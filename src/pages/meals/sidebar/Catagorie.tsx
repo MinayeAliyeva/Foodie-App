@@ -38,19 +38,16 @@ const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
 
   const handleChangeChecBox = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedValue = event.target.value;
-    // console.log('event', event);
+    console.log('event', event);
     
-    // setSelectedCategories((prevSelected) =>
-    //   prevSelected.includes(selectedValue)
-    //     ? prevSelected.filter((item) => item !== selectedValue)
-    //     : [...prevSelected, selectedValue]
-    // );
-    //if(event.target.checked)
+    setSelectedCategories((prevSelected) =>
+      prevSelected.includes(selectedValue)
+        ? prevSelected.filter((item) => item !== selectedValue)
+        : [...prevSelected, selectedValue]
+    );
     getCatagorieData({
       value: event.target.value, 
-      isChecked: event.target.checked, 
-      key: 's'
-    });
+      isChecked: event.target.checked, key: 's'});
     // getCatagorieData(
     //   selectedCategories.includes(selectedValue)
     //     ? selectedCategories.filter((item) => item !== selectedValue)
@@ -89,9 +86,9 @@ const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
               <Checkbox
                 value={catagorie?.strCategory}
                 onChange={handleChangeChecBox}
-                // isChecked={selectedCategories.includes(
-                //   catagorie?.strCategory || ""
-                // )}
+                isChecked={selectedCategories.includes(
+                  catagorie?.strCategory || ""
+                )}
               >
                 {catagorie?.strCategory}
               </Checkbox>

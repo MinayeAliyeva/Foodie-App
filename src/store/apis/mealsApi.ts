@@ -73,8 +73,12 @@ const mealsApi = createApi({
     getMealsByIngredients: builder.query<any, string | void>({
       query: (ingredient) => `filter.php?i=${ingredient}`,
     }),
+    getRandomMealQuery: builder.query<any, string | void>({
+      query: () => `random.php`,
+    }),
   }),
 });
+//www.themealdb.com/api/json/v1/1/
 
 export const {
   useGetMealsQuery,
@@ -85,6 +89,7 @@ export const {
   useLazyGetMealsByAreaQuery,
   useGetIngredientsQuery,
   useLazyGetMealsByIngredientsQuery,
+  useLazyGetRandomMealQueryQuery
 } = mealsApi;
 
 export default mealsApi;
