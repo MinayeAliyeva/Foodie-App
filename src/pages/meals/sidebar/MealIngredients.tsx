@@ -9,10 +9,25 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { useGetIngredientsQuery } from "../../../store/apis/mealsApi";
+import { useState } from "react";
 
-export const MealIngredient = () => {
+export const MealIngredient = ({ getIngredientData }: any) => {
+  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const { data: ingredientData } = useGetIngredientsQuery();
-
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedValue = event.target.value;
+    setSelectedIngredients((prevSelected) =>
+      prevSelected.includes(selectedValue)
+        ? prevSelected.filter((item) => item !== selectedValue)
+        : [...prevSelected, selectedValue]
+    );
+    //getIngredientData
+    getIngredientData(
+      selectedIngredients.includes(selectedValue)
+        ? selectedIngredients.filter((item) => item !== selectedValue)
+        : [...selectedIngredients, selectedValue]
+    );
+  };
   return (
     <AccordionItem>
       <h2>
@@ -27,11 +42,12 @@ export const MealIngredient = () => {
         <Input placeholder="Axtar" />
         <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {ingredientData?.meals?.map((ingredient: any) => {
-            //console.log("ingredient", ingredient);
-
             return (
               <Box key={ingredient?.idIngredient}>
-                <Checkbox value={ingredient?.strIngredient}>
+                <Checkbox
+                  onChange={handleCheckboxChange}
+                  value={ingredient?.strIngredient}
+                >
                   {ingredient?.strIngredient}
                 </Checkbox>
               </Box>

@@ -3,9 +3,8 @@ import { Layout, Row, Col } from "antd";
 import NavBar from "./navbar/NavBar";
 import TopicMenu from "./TopicMenu";
 import { XSideBar } from "./sidebar/XSideBar";
-import { useFetchCocktailsQuery, } from "../../store";
 import XCard from "../../shared/components/XCard";
-import { CocktailsResponse } from "../../store/apis/coctailApi";
+import { CocktailsResponse, useGetCoctailsQuery } from "../../store/apis/coctailApi";
 
 export const Drinks = () => {
   const topics = ["First topic", "Second topic", "Third topic"];
@@ -13,7 +12,7 @@ export const Drinks = () => {
   const [selectedKey, setSelectedKey] = useState("0");
 
   //FETCHING MEALS
-  const { data, error, isLoading } = useFetchCocktailsQuery<{
+  const { data, error, isLoading } = useGetCoctailsQuery<{
     data: CocktailsResponse;
     error: string;
     isLoading: boolean;
@@ -40,7 +39,7 @@ export const Drinks = () => {
         <XSideBar menu={Menu} />
         <Layout.Content className="content">
           <Row gutter={[16, 16]}>
-            {drinks?.map((drink) => (
+            {drinks?.map((drink:any) => (
               <Col span={6} key={drink?.idDrink}>
                 <XCard drink={drink} />
               </Col>

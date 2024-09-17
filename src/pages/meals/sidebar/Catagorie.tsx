@@ -13,7 +13,7 @@ import { IMealCategories, IMealCategory, useGetMealsByCategoriesQuery } from "..
 import { minMealCatagorieLength } from "../data";
 
 interface IProps {
-  getCatagorieData: (catagorie: string[]) => void;
+  getCatagorieData: ({value, isChecked, key }:{value: string, isChecked?: boolean, key?: string}) => void;
 }
 
 const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
@@ -38,16 +38,24 @@ const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
 
   const handleChangeChecBox = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedValue = event.target.value;
-    setSelectedCategories((prevSelected) =>
-      prevSelected.includes(selectedValue)
-        ? prevSelected.filter((item) => item !== selectedValue)
-        : [...prevSelected, selectedValue]
-    );
-    getCatagorieData(
-      selectedCategories.includes(selectedValue)
-        ? selectedCategories.filter((item) => item !== selectedValue)
-        : [...selectedCategories, selectedValue]
-    );
+    // console.log('event', event);
+    
+    // setSelectedCategories((prevSelected) =>
+    //   prevSelected.includes(selectedValue)
+    //     ? prevSelected.filter((item) => item !== selectedValue)
+    //     : [...prevSelected, selectedValue]
+    // );
+    //if(event.target.checked)
+    getCatagorieData({
+      value: event.target.value, 
+      isChecked: event.target.checked, 
+      key: 's'
+    });
+    // getCatagorieData(
+    //   selectedCategories.includes(selectedValue)
+    //     ? selectedCategories.filter((item) => item !== selectedValue)
+    //     : [...selectedCategories, selectedValue]
+    // );
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,9 +89,9 @@ const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
               <Checkbox
                 value={catagorie?.strCategory}
                 onChange={handleChangeChecBox}
-                isChecked={selectedCategories.includes(
-                  catagorie?.strCategory || ""
-                )}
+                // isChecked={selectedCategories.includes(
+                //   catagorie?.strCategory || ""
+                // )}
               >
                 {catagorie?.strCategory}
               </Checkbox>
