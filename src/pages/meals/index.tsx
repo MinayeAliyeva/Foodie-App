@@ -18,8 +18,6 @@ export const Meals = () => {
     areas: [],
   });
 
-  console.log("mealsAll", mealsAll);
-
   const [state, setState] = useState<{
     category: string[];
     area: string[];
@@ -71,7 +69,6 @@ export const Meals = () => {
     isChecked?: boolean;
     key?: "s" | "a" | "i";
   }) => {
-    console.log({ value, isChecked, key });
     if (key === "s") {
       if (isChecked) {
         setState((prev) => ({ ...prev, category: [...prev.category, value] }));
@@ -86,6 +83,7 @@ export const Meals = () => {
         setState((prev) => ({ ...prev, area: [...prev.area, value] }));
       } else {
         const filteredArea = state.area.filter((area) => area !== value);
+        console.log("filteredArea", filteredArea);
         setState((prev) => ({ ...prev, area: filteredArea }));
       }
     } else if (key === "i") {
@@ -115,7 +113,7 @@ export const Meals = () => {
         );
         setMealsAll((prev: any) => ({
           ...prev,
-          catagories: mealsCatagoryResponse, // Eğer prev.categories undefined ise, boş bir diziyle başlatılır
+          catagories: mealsCatagoryResponse,
         }));
         showAllFilteredMeal.catagories = mealsCatagoryResponse;
       } catch (error) {
@@ -128,73 +126,45 @@ export const Meals = () => {
         const areaPromises = state.area.map((area: string) =>
           getAreaMeals(area, true)
         );
+
         const areas = await Promise.all(areaPromises);
 
         const mealsAreaResponse = areas.flatMap(
           (mealObj) => mealObj?.data?.meals || []
         );
+
         setMealsAll((prev: any) => ({
           ...prev,
-          areas: mealsAreaResponse, // Eğer prev.categories undefined ise, boş bir diziyle başlatılır
+          areas: mealsAreaResponse,
         }));
         showAllFilteredMeal.areas = mealsAreaResponse;
+        console.log("mealsAreaResponse", mealsAreaResponse);
       } catch (error) {
         console.log("error");
       }
     };
-    const combinedMeals = [
-      ...showAllFilteredMeal.catagories,
-      ...showAllFilteredMeal.areas,
-    ];
-    console.log("combinedMeals", combinedMeals);
+    console.log("LENGTH AREA ", state?.area?.length);
+    fetcAreaData();
+    fetchCatagoryData();
 
-    if (state?.area?.length) {
-      fetcAreaData();
-    }
-    if (state.category?.length) {
-      fetchCatagoryData();
-    }
     if (!state.category?.length && !state.area?.length) {
       getMeals();
       setMealsAll([]);
     }
-  }, [state]);
-  // console.log("mealsAll.catagories", mealsAll?.catagories);
-  // console.log("mealsAll.areas", mealsAll.areas);
-  console.log("mealsAll", mealsAll);
-  console.log("DATA", data);
+  }, [state, getAreaMeals, getMeals]);
 
   const mealList = useMemo(() => {
-    // const combinedMeals = [
-    //   ...(mealsAll?.catagories || []),
-    //   ...(mealsAll.areas || []),
-    // ];
-    // const combinedMeals =   mealsAll.catagories?.length && mealsAll.areas?.length
-    //     ? mealsAll.catagories?.map((catagorie: any) => {
-    //         mealsAll.areas?.filter(
-    //           (area: any) => area?.idMeal === catagorie?.idMeal
-    //         );
-    //       })
-    //     : [...(mealsAll?.catagories || []), ...(mealsAll.areas || [])];
-    // console.log("combinedMeals", combinedMeals);
-    // return combinedMeals;
-
     const sameIdMeals = mealsAll?.catagories?.filter((thumbnail: any) =>
       mealsAll?.areas?.some((meal: any) => meal.idMeal === thumbnail.idMeal)
     );
-    console.log("sameIdMeals", sameIdMeals);
     return sameIdMeals;
   }, [mealsAll]);
 
-  console.log("sameIdMeals", mealList);
-
-  // const meals =
-  //   mealsAll?.catagories?.length &&
-  //   mealsAll?.areas?.length &&
-  //   mealList?.length >= 0
-  //     ? mealList
-  //     : data?.meals || [];
   const meals = useMemo(() => {
+    console.log("mealsArea", mealsAll?.areas);
+    console.log("mealsAll?.catagories", mealsAll?.catagories);
+    console.log("mealList", mealList);
+
     if (mealsAll?.catagories?.length && !mealsAll?.areas?.length) {
       return mealsAll.catagories;
     } else if (!mealsAll?.catagories?.length && mealsAll?.areas?.length) {
@@ -206,8 +176,6 @@ export const Meals = () => {
     }
   }, [mealsAll.catagories, mealList, data?.meals, mealsAll.areas]);
 
-  console.log("DATA MEALS", data?.meals);
-
   return (
     <>
       <NavBar menu={Menu} />
@@ -218,6 +186,7 @@ export const Meals = () => {
           getIngredientData={getIngredientData}
         />
         <Layout.Content className="content">
+          <Row> VERI SAYI: {meals?.length}</Row>
           <Row gutter={[16, 16]}>
             {meals?.map((meal: any) => (
               <XCard key={meal?.idMeal} meal={meal} />
