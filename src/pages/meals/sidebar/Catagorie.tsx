@@ -9,8 +9,9 @@ import {
   Input,
 } from "@chakra-ui/react";
 import React, { FC, useEffect, useState } from "react";
-import { IMealCategories, IMealCategory, useGetMealsByCategoriesQuery } from "../../../store/apis/mealsApi";
+import {  useGetMealsByCategoriesQuery } from "../../../store/apis/mealsApi";
 import { minMealCatagorieLength } from "../data";
+import { IMealCategories, IMealCategory } from "../../../modules";
 
 interface IProps {
   getCatagorieData: ({value, isChecked, key }:{value: string, isChecked?: boolean, key?: string}) => void;
@@ -57,7 +58,7 @@ const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
-    const filteredCatagories = catagorieData?.categories.filter((catagorie) =>
+    const filteredCatagories = catagorieData?.categories.filter((catagorie:IMealCategory) =>
       catagorie?.strCategory
         .toLowerCase()
         .includes(event.target.value.toLowerCase())

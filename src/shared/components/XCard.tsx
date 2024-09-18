@@ -110,13 +110,16 @@ const XCard = ({
 
   return (
     <Card
-      m="10px 0"
+      m="10px 10px"
       w="280px"
       borderRadius="md"
       overflow="hidden"
       boxShadow="sm"
+      
+   
     >
-      <CardBody p="2">
+      <CardBody p="2"    display="flex"
+      flexDirection="column">
         <Image
           src={itemThumb || image}
           alt={title || "Image"}

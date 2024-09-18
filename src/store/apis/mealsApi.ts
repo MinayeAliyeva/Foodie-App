@@ -1,40 +1,18 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { IMeal } from "../../shared/components/XCard";
+import {
+  IMealCategories,
+  IMealDetail,
+  IMealsIngredients,
+  IRandomMeal,
+  MealsResponse,
+} from "../../modules";
 
-export interface Meal {
-  idMeal: string;
-  strMeal: string;
-  strCategory: string;
-  strArea: string;
-  strInstructions: string;
-  strMealThumb: string;
-  strTags: string;
-  strYoutube: string;
-}
-
-export interface MealsResponse {
-  meals: Meal[];
-}
-
-export interface IMealCategory {
-  idCategory: string;
-  strCategory: string;
-  strCategoryThumb: string;
-  strCategoryDescription: string;
-}
-
-export interface IMealCategories {
-  categories: IMealCategory[];
-}
-
-export interface IMealDetail {
-  meals: Meal[];
-}
 const enum url {
   BASE_URL = "https://www.themealdb.com/api/json/v1/1/",
   SEARCH_BY_URL = "search.php?",
   DETAIL_URL = "lookup.php?",
   CATOGORY_URL = "categories.php",
+  AREA_URL = "list.php?",
   LIST_URL = "list.php?",
   FILTER_URL = "filter.php?",
   RANDOM_URL = "random.php",
@@ -50,6 +28,7 @@ const mealsApi = createApi({
     getMeals: builder.query<MealsResponse, string | void>({
       query: (category = "") => ({
         url: url?.SEARCH_BY_URL,
+
         params: {
           s: category,
         },
@@ -68,10 +47,10 @@ const mealsApi = createApi({
       }),
     }),
     getMealsArea: builder.query<IMealDetail, string | void>({
-      query: (list) => ({
-        url: url?.LIST_URL,
+      query: (a = "") => ({
+        url: url?.AREA_URL,
         params: {
-          a: list,
+          a,
         },
       }),
     }),
@@ -83,7 +62,7 @@ const mealsApi = createApi({
         },
       }),
     }),
-    getIngredients: builder.query<IMealDetail, string | void>({
+    getIngredients: builder.query<IMealsIngredients, string | void>({
       query: (i = "") => ({
         url: url?.LIST_URL,
         params: {
@@ -91,7 +70,7 @@ const mealsApi = createApi({
         },
       }),
     }),
-    getMealsByIngredients: builder.query<any, string | void>({
+    getMealsByIngredients: builder.query<IMealsIngredients, string | void>({
       query: (ingredient) => ({
         url: url?.FILTER_URL,
         params: {
@@ -99,7 +78,7 @@ const mealsApi = createApi({
         },
       }),
     }),
-    getRandomMealQuery: builder.query<any, string | void>({
+    getRandomMealQuery: builder.query<IRandomMeal, string | void>({
       query: () => ({
         url: url?.RANDOM_URL,
       }),

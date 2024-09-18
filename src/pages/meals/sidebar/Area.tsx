@@ -17,6 +17,8 @@ export const MealArea = ({ getAreaData }: any) => {
   const [areasState, setAreasState] = useState<any>([]);
   const [value, setValue] = useState("");
   const { data: areaData } = useGetMealsAreaQuery();
+  console.log("areaData",areaData);
+  
   useEffect(() => {
     if (areaData?.meals) {
       setAreasState(areaData.meals);
@@ -36,11 +38,6 @@ export const MealArea = ({ getAreaData }: any) => {
       isChecked: event.target.checked,
       key: "a",
     });
-    // getAreaData(
-    //   selectedAreas.includes(selectedValue)
-    //     ? selectedAreas.filter((item) => item !== selectedValue)
-    //     : [...selectedAreas, selectedValue]
-    // );
   };
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = event.target.value.toLowerCase();

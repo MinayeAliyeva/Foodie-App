@@ -9,40 +9,39 @@ export interface Cocktail {
   strDrinkThumb: string;
   [key: string]: any;
 }
-
 export interface CocktailsResponse {
   drinks: Cocktail[];
 }
-
-const BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/";
-const SEARCH_BY_URL = "search.php";
+const enum url {
+  BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/",
+  SEARCH_BY_URL = "search.php",
+  DETAIL_URL = "lookup.php?",
+}
 
 const cocktailsApi = createApi({
   reducerPath: "cocktails",
   baseQuery: fetchBaseQuery({
-    baseUrl: BASE_URL,
+    baseUrl: url?.BASE_URL,
   }),
   endpoints: (builder) => ({
     getCoctails: builder.query<CocktailsResponse, string | void>({
       query: (category = "") => ({
-        url: SEARCH_BY_URL,
+        url: url?.SEARCH_BY_URL,
         params: {
           s: category,
         },
       }),
       keepUnusedDataFor: 60,
     }),
-    getRandomCoctailQuery: builder.query<any, string | void>({
-      query: () => `random.php`,
-    }),
     getCoctailDetail: builder.query<any, string | void>({
-      query: (detailId) => `lookup.php?i=${detailId}`,
+      query: (detailId) => ({
+        url: url?.DETAIL_URL,
+        params: {
+          i: detailId,
+        },
+      }),
     }),
   }),
 });
-export const {
-  useGetCoctailsQuery,
-  useLazyGetRandomCoctailQueryQuery,
-  useGetCoctailDetailQuery,
-} = cocktailsApi;
+export const { useGetCoctailsQuery, useLazyGetCoctailDetailQuery } = cocktailsApi;
 export default cocktailsApi;
