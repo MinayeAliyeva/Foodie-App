@@ -79,12 +79,23 @@ const Header = () => {
             {" "}
             <img width="70px" src={logo} alt="" />
           </Link>
-          <InputGroup size="lg" width="500px">
-            <InputRightElement pointerEvents="none">
-              <FaSearch color="gray.300" />
-            </InputRightElement>
-            <Input placeholder="Ara..." borderRadius="100px" />
-          </InputGroup>
+          <Flex align="center" justifyContent="center" gap="10px">
+          <NavLink to="/" style={{ fontWeight: "bold" }}>
+            Ana Sayfa
+          </NavLink>
+          <Text>|</Text>
+          <NavLink to="/meals" style={{ fontWeight: "bold" }}>
+            Yemekler
+          </NavLink>
+          <Text>|</Text>
+          <NavLink style={{ fontWeight: "bold" }} to="/cocktails">
+            Icecekler
+          </NavLink>
+          <Text>|</Text>
+          <NavLink style={{ fontWeight: "bold" }} to="/favorites">
+            Sevimliler
+          </NavLink>
+        </Flex>
           <Flex gap="20px" align="center">
             <Flex align="center" gap="5px">
               <Button
@@ -122,25 +133,7 @@ const Header = () => {
           </Flex>
         </Flex>
       </XContainer>
-      <XContainer bg="rgb(254, 246, 246)" width="100%">
-        <Flex align="center" justifyContent="center" gap="10px">
-          <NavLink to="/" style={{ fontWeight: "bold" }}>
-            Ana Sayfa
-          </NavLink>
-          <Text>|</Text>
-          <NavLink to="/meals" style={{ fontWeight: "bold" }}>
-            Yemekler
-          </NavLink>
-          <Text>|</Text>
-          <NavLink style={{ fontWeight: "bold" }} to="/cocktails">
-            Icecekler
-          </NavLink>
-          <Text>|</Text>
-          <NavLink style={{ fontWeight: "bold" }} to="/favorites">
-            Sevimliler
-          </NavLink>
-        </Flex>
-      </XContainer>
+
     </>
   );
 };

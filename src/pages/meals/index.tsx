@@ -162,8 +162,16 @@ export const Meals = () => {
 
   const meals = useMemo(() => {
     console.log("mealsArea", mealsAll?.areas);
+    const catagorieId = mealsAll?.catagories.map((meal: any) => meal.idMeal);
+    console.log("catagorieId", catagorieId);
+    const areasId = mealsAll?.areas.map((area: any) => area.idMeal);
+    console.log("areasId", areasId);
+    const commonNumbers = catagorieId.filter((number: any) =>
+      areasId.includes(number)
+    );
     console.log("mealsAll?.catagories", mealsAll?.catagories);
     console.log("mealList", mealList);
+    console.log("commonNumbers", commonNumbers);
 
     if (mealsAll?.catagories?.length && !mealsAll?.areas?.length) {
       return mealsAll.catagories;
@@ -186,7 +194,12 @@ export const Meals = () => {
           getIngredientData={getIngredientData}
         />
         <Layout.Content className="content">
-          <Row> VERI SAYI: {meals?.length}</Row>
+          <Row
+            style={{ fontSize: "25px", color: "#C62828", fontWeight: "bold" }}
+          >
+            {" "}
+            VERI SAYI: {meals?.length}
+          </Row>
           <Row gutter={[16, 16]}>
             {meals?.map((meal: any) => (
               <XCard key={meal?.idMeal} meal={meal} />
