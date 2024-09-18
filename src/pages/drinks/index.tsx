@@ -41,7 +41,7 @@ export const Drinks = () => {
           <Row gutter={[16, 16]}>
             {drinks?.map((drink:any) => (
               <Col span={6} key={drink?.idDrink}>
-                <XCard drink={drink} />
+                {/* <XCard data={} /> */}
               </Col>
             ))}
           </Row>

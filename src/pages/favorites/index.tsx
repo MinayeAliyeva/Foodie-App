@@ -1,23 +1,39 @@
-import React from "react";
-import { Box, Heading, Grid, Flex, Divider } from "@chakra-ui/react";
+import React, { useState } from "react";
+import { Box, Heading, Flex } from "@chakra-ui/react";
 import XCard from "../../shared/components/XCard";
 import { GoInbox } from "react-icons/go";
 const Favorites = () => {
   const storedFavorites = localStorage.getItem("likes");
   const favorites = storedFavorites ? JSON.parse(storedFavorites) : [];
-
+  const [favoriteList, setFavoriteList] = useState(favorites);
+  const handleLike = (idMeal: string) => {
+    const filteredFavoriteList = favoriteList?.filter(
+      (favorite: any) => favorite?.idMeal !== idMeal
+    );
+    setFavoriteList(filteredFavoriteList);
+    localStorage.setItem("likes", JSON.stringify(filteredFavoriteList));
+  };
   return (
-    <Box  maxW="1200px" margin="auto">
+    <Box maxW="1200px" margin="auto">
       {favorites.length > 0 ? (
-        <Box  style={{display:'flex',alignItems:'center' ,flexWrap:'wrap',gap:'15px'}}>
-          {favorites.map((favorite: any, index: number) => (
+        <Box
+          style={{
+            display: "flex",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "15px",
+          }}
+        >
+          {favoriteList.map((favorite: any, index: number) => (
             <XCard
               key={index}
-              title={favorite.strMeal || favorite.strDrink}
-              content={`Category: ${favorite.strCategory || "N/A"}`}
-              image={favorite.strMealThumb || favorite.strDrinkThumb}
-              meal={favorite.strMeal ? favorite : undefined}
-              drink={favorite.strDrink ? favorite : undefined}
+              data={favorite}
+              handleLike={handleLike}
+              // content={`Category: ${favorite.strCategory || "N/A"}`}
+              // image={favorite.strMealThumb || favorite.strDrinkThumb}
+              // meal={favorite.strMeal ? favorite : undefined}
+              // drink={favorite.strDrink ? favorite : undefined}
+              // data={[]}
             />
           ))}
         </Box>

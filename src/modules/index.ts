@@ -22,6 +22,7 @@ export interface Meal {
   strMealThumb: string;
   strTags: string;
   strYoutube: string;
+  [key: string]: string;
 }
 
 export interface MealsResponse {
@@ -59,4 +60,12 @@ export interface IRandomMeal {
   strArea: string;
   strInstructions: string;
   strMealThumb: string;
+}
+export interface ICardData2 {
+  itemTitle: string;
+  itemThumb: string;
+  itemCategory: string;
+  itemIngredients: string[];
+  idMeal: string;
+  isLiked: boolean;
 }
