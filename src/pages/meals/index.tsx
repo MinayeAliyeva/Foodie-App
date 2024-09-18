@@ -8,7 +8,10 @@ import {
   useLazyGetMealsByIngredientsQuery,
   useLazyGetMealsQuery,
 } from "../../store/apis/mealsApi";
-import XCard from "../../shared/components/XCard";
+import XCard, { IDrink, IMeal } from "../../shared/components/XCard";
+import { useNavigate } from "react-router";
+import { ICardData2 } from "../../modules";
+import MealCard from "./MealCard";
 
 export const Meals = () => {
   const topics = ["First topic", "Second topic", "Third topic"];
@@ -184,6 +187,12 @@ export const Meals = () => {
     }
   }, [mealsAll.catagories, mealList, data?.meals, mealsAll.areas]);
 
+
+
+
+
+
+
   return (
     <>
       <NavBar menu={Menu} />
@@ -201,9 +210,7 @@ export const Meals = () => {
             VERI SAYI: {meals?.length}
           </Row>
           <Row gutter={[16, 16]}>
-            {meals?.map((meal: any) => (
-              <XCard key={meal?.idMeal} meal={meal} />
-            ))}
+            <MealCard meals={meals} />
           </Row>
         </Layout.Content>
       </Layout>

@@ -17,7 +17,7 @@ import {
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowRightLong } from "react-icons/fa6";
-import {  useLazyGetMealDetailQuery } from "../../store/apis/mealsApi";
+import { ICardData, ICardData2 } from "../../modules";
 
 export interface IMeal {
   idMeal?: string;
@@ -48,6 +48,14 @@ interface XCardProps {
   to?: string;
   meal?: IMeal;
   drink?: IDrink;
+  itemThumb?: string;
+  itemTitle?: string;
+  itemCategory?: string;
+  itemIngredients?: string[];
+  isLiked?: boolean;
+  handleLike?: (idMeal: string) => void;
+  handleDetail?: (id?: string) => void;
+  data: ICardData2;
 }
 
 const XCard = ({
@@ -56,57 +64,24 @@ const XCard = ({
   btnContent = "Learn More",
   image,
   to,
-  meal,
-  drink,
+  handleLike,
+  handleDetail,
+  data,
 }: XCardProps) => {
-  const [isLiked, setIsLiked] = useState<boolean>(false);
-  const [getDetail, { data }] = useLazyGetMealDetailQuery();
-  const navigate=useNavigate();
-  useEffect(() => {
-    const likedItems = JSON.parse(localStorage.getItem("likes") || "[]");
-    const currentItem = meal || drink;
-    if (currentItem) {
-      const itemString = JSON.stringify(currentItem);
-      const liked = likedItems.some(
-        (item: IMeal | IDrink) => JSON.stringify(item) === itemString
-      );
-      setIsLiked(liked);
-    }
-  }, [meal, drink]);
+  const {
+    itemTitle,
+    itemThumb,
+    itemCategory,
+    itemIngredients,
+    isLiked,
+    idMeal,
+  } = data;
+  console.log("data", data);
 
-  const handleLike = () => {
-    const currentItem = meal || drink;
-    if (!currentItem) return;
-    const currentLikes = JSON.parse(localStorage.getItem("likes") || "[]");
-    const itemString = JSON.stringify(currentItem);
-    const isItemLiked = currentLikes.some(
-      (item: IMeal | IDrink) => JSON.stringify(item) === itemString
-    );
-
-    const updatedLikes = isItemLiked
-      ? currentLikes.filter(
-          (item: IMeal | IDrink) => JSON.stringify(item) !== itemString
-        )
-      : [...currentLikes, currentItem];
-
-    localStorage.setItem("likes", JSON.stringify(updatedLikes));
-    setIsLiked(!isItemLiked);
+  const onHandleLikeClick = () => {
+    handleLike?.(idMeal);
   };
-
-  const itemTitle = meal?.strMeal || drink?.strDrink;
-  const itemThumb = meal?.strMealThumb || drink?.strDrinkThumb;
-  const itemCategory = meal?.strCategory || drink?.strCategory;
-  const itemIngredients = [
-    meal?.strIngredient1 || drink?.strIngredient1,
-    meal?.strIngredient2 || drink?.strIngredient2,
-    meal?.strIngredient3 || drink?.strIngredient3,
-  ].filter(Boolean);
-  const handleDetail = (id: string | undefined) => {
-    if (id) {
-      console.log("Detail for ID:", id);
-      navigate(`/detail/${id}`); // navigate ile yönlendirme yapın
-    }
-  };
+  const onHandleDetail = () => handleDetail?.(data?.idMeal);
 
   return (
     <Card
@@ -115,13 +90,10 @@ const XCard = ({
       borderRadius="md"
       overflow="hidden"
       boxShadow="sm"
-      
-   
     >
-      <CardBody p="2"    display="flex"
-      flexDirection="column">
+      <CardBody p="2" display="flex" flexDirection="column">
         <Image
-          src={itemThumb || image}
+          src={itemThumb}
           alt={title || "Image"}
           borderRadius="md"
           boxSize="100%"
@@ -129,23 +101,25 @@ const XCard = ({
           mb="3"
         />
         <Stack height="180px" spacing="2">
-          <Heading size="sm">{title || itemTitle}</Heading>
+          <Heading size="sm">{itemTitle}</Heading>
           <Text fontSize="sm" fontWeight="bold">
             Category: {itemCategory || "N/A"}
           </Text>
-          {itemIngredients.length > 0 && (
+          {itemIngredients && itemIngredients?.length > 0 ? (
             <>
               <Text fontSize="sm" fontWeight="bold">
                 Ingredients:
               </Text>
               <UnorderedList>
-                {itemIngredients.map((ingredient, index) => (
+                {itemIngredients?.map((ingredient, index) => (
                   <ListItem key={index} fontSize="sm">
                     {ingredient}
                   </ListItem>
                 ))}
               </UnorderedList>
             </>
+          ) : (
+            <></>
           )}
           <Text mt="2" fontSize="sm">
             {content}
@@ -157,7 +131,7 @@ const XCard = ({
         <Flex align="center" justify="space-between" gap="30px">
           <Button
             leftIcon={isLiked ? <FaHeart /> : <FaRegHeart />}
-            onClick={handleLike}
+            onClick={onHandleLikeClick}
             variant="outline"
             border="none"
             colorScheme={isLiked ? "red" : ""}
@@ -165,9 +139,7 @@ const XCard = ({
           >
             {isLiked ? "Liked" : "Like"}
           </Button>
-          <Button onClick={() => handleDetail(meal?.idMeal || drink?.idDrink)}>
-            Detail
-          </Button>
+          <Button onClick={onHandleDetail}>Detail</Button>
           {to && (
             <ButtonGroup spacing="1">
               <Link to={to}>
