@@ -35,8 +35,14 @@ const cocktailsApi = createApi({
     getRandomCoctailQuery: builder.query<any, string | void>({
       query: () => `random.php`,
     }),
+    getCoctailDetail: builder.query<any, string | void>({
+      query: (detailId) => `lookup.php?i=${detailId}`,
+    }),
   }),
 });
-export const { useGetCoctailsQuery, useLazyGetRandomCoctailQueryQuery } =
-  cocktailsApi;
+export const {
+  useGetCoctailsQuery,
+  useLazyGetRandomCoctailQueryQuery,
+  useGetCoctailDetailQuery,
+} = cocktailsApi;
 export default cocktailsApi;

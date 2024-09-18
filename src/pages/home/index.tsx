@@ -29,31 +29,40 @@ const DrinkCard = lazy(() => import("./DrinkCard"));
 const Home = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [randomData, setRandomData] = useState<any>(null);
-  const debouncedSearchValue = useDebounce(searchValue, 800);
+  const debouncedSearchValue = useDebounce(searchValue, 1000);
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const [searching, serSearching] = useState(false);
+  console.log("searching", searching);
+  console.log("debouncedSearchValue", debouncedSearchValue.length);
   const {
     data: mealsData,
     error: mealsError,
     isLoading: mealsLoading,
-  } = useGetMealsQuery(debouncedSearchValue);
+  } = useGetMealsQuery(debouncedSearchValue, {
+    skip: !!searchValue.length && searchValue.length <= 2,
+  });
 
   const {
     data: drinksData,
     error: drinksError,
     isLoading: drinksLoading,
-  } = useGetCoctailsQuery(debouncedSearchValue);
+  } = useGetCoctailsQuery(debouncedSearchValue, {
+    skip: !!searchValue.length && searchValue.length <= 2,
+  });
 
-  const [trigger, { data }] = useLazyGetRandomMealQueryQuery<any>(); 
-  // const [trigger, { data }] = useLazyGetRandomCoctailQueryQuery<any>(); 
+  const [trigger, { data }] = useLazyGetRandomMealQueryQuery<any>();
   useEffect(() => {
     if (data) {
       setRandomData(data);
       onOpen();
     }
-  }, [data, onOpen]);
+    if (searching) {
+      serSearching(false);
+    }
+  }, [data, onOpen, searching]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    serSearching(true);
     setSearchValue(event.target.value);
   };
 

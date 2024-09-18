@@ -79,7 +79,6 @@ export const Meals = () => {
         const filteredCatagory = state.category.filter(
           (catagory) => catagory !== value
         );
-
         setState((prev) => ({ ...prev, category: filteredCatagory }));
       }
     } else if (key === "a") {
@@ -102,58 +101,15 @@ export const Meals = () => {
         setState((prev) => ({ ...prev, ingredient: filteredIngredient }));
       }
     }
-
-    // switch (key) {
-    //   case "s":
-    //     setState((prev) => ({ ...prev, category: [...prev.category, value] }));
-    //     break;
-    //   case "a":
-    //     setState((prev) => ({ ...prev, area: [...prev.area, value] }));
-    //     break;
-    //   case "i":
-    //     setState((prev) => ({
-    //       ...prev,
-    //       ingredient: [...prev.ingredient, value],
-    //     }));
-    //     break;
-    // }
   };
-  console.log("mealsAll.cat", mealsAll?.catagories);
-  console.log("mealsAll.areas", mealsAll.areas);
-
-  const mealList = useMemo(() => {
-    // const combinedMeals = [
-    //   ...(mealsAll?.catagories || []),
-    //   ...(mealsAll.areas || []),
-    // ];
-    // const combinedMeals =   mealsAll.catagories?.length && mealsAll.areas?.length
-    //     ? mealsAll.catagories?.map((catagorie: any) => {
-    //         mealsAll.areas?.filter(
-    //           (area: any) => area?.idMeal === catagorie?.idMeal
-    //         );
-    //       })
-    //     : [...(mealsAll?.catagories || []), ...(mealsAll.areas || [])];
-    // console.log("combinedMeals", combinedMeals);
-    // return combinedMeals;
-    const sameIdMeals = mealsAll?.catagories?.filter((thumbnail: any) =>
-      mealsAll?.areas?.some((meal: any) => meal.idMeal === thumbnail.idMeal)
-    );
-    return sameIdMeals;
-  }, [mealsAll]);
-  console.log("sameIdMeals", mealList);
-
-  const meals = mealList?.length > 0 ? mealList : data?.meals || [];
-
   useEffect(() => {
     let showAllFilteredMeal = { catagories: [], areas: [] } as any;
-
     const fetchCatagoryData = async () => {
       try {
         const mealPromises = state.category.map((catagory: string) =>
           getMeals(catagory, true)
         );
         const meals = await Promise.all(mealPromises);
-
         const mealsCatagoryResponse = meals.flatMap(
           (mealObj) => mealObj?.data?.meals || []
         );
@@ -203,6 +159,54 @@ export const Meals = () => {
       setMealsAll([]);
     }
   }, [state]);
+  // console.log("mealsAll.catagories", mealsAll?.catagories);
+  // console.log("mealsAll.areas", mealsAll.areas);
+  console.log("mealsAll", mealsAll);
+  console.log("DATA", data);
+
+  const mealList = useMemo(() => {
+    // const combinedMeals = [
+    //   ...(mealsAll?.catagories || []),
+    //   ...(mealsAll.areas || []),
+    // ];
+    // const combinedMeals =   mealsAll.catagories?.length && mealsAll.areas?.length
+    //     ? mealsAll.catagories?.map((catagorie: any) => {
+    //         mealsAll.areas?.filter(
+    //           (area: any) => area?.idMeal === catagorie?.idMeal
+    //         );
+    //       })
+    //     : [...(mealsAll?.catagories || []), ...(mealsAll.areas || [])];
+    // console.log("combinedMeals", combinedMeals);
+    // return combinedMeals;
+
+    const sameIdMeals = mealsAll?.catagories?.filter((thumbnail: any) =>
+      mealsAll?.areas?.some((meal: any) => meal.idMeal === thumbnail.idMeal)
+    );
+    console.log("sameIdMeals", sameIdMeals);
+    return sameIdMeals;
+  }, [mealsAll]);
+
+  console.log("sameIdMeals", mealList);
+
+  // const meals =
+  //   mealsAll?.catagories?.length &&
+  //   mealsAll?.areas?.length &&
+  //   mealList?.length >= 0
+  //     ? mealList
+  //     : data?.meals || [];
+  const meals = useMemo(() => {
+    if (mealsAll?.catagories?.length && !mealsAll?.areas?.length) {
+      return mealsAll.catagories;
+    } else if (!mealsAll?.catagories?.length && mealsAll?.areas?.length) {
+      return mealsAll.areas;
+    } else if (mealsAll?.catagories?.length && mealsAll?.areas?.length) {
+      return mealList;
+    } else {
+      return data?.meals;
+    }
+  }, [mealsAll.catagories, mealList, data?.meals, mealsAll.areas]);
+
+  console.log("DATA MEALS", data?.meals);
 
   return (
     <>

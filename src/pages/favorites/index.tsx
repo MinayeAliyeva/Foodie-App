@@ -7,7 +7,7 @@ const Favorites = () => {
   const favorites = storedFavorites ? JSON.parse(storedFavorites) : [];
 
   return (
-    <Box maxW="1200px" margin="auto">
+    <Box  maxW="1200px" margin="auto">
       {favorites.length > 0 ? (
         <Box  style={{display:'flex',alignItems:'center' ,flexWrap:'wrap',gap:'15px'}}>
           {favorites.map((favorite: any, index: number) => (
@@ -23,7 +23,7 @@ const Favorites = () => {
         </Box>
       ) : (
         <Flex
-          height="350px"
+          // height="800px"
           align="center"
           justifyContent="center"
           flexDirection="column"
