@@ -30,55 +30,82 @@ export interface IMealCategories {
 export interface IMealDetail {
   meals: Meal[];
 }
-
-const BASE_URL = "https://www.themealdb.com/api/json/v1/1/";
-const SEARCH_BY_URL = "search.php?";
+const enum url {
+  BASE_URL = "https://www.themealdb.com/api/json/v1/1/",
+  SEARCH_BY_URL = "search.php?",
+  DETAIL_URL = "lookup.php?",
+  CATOGORY_URL = "categories.php",
+  LIST_URL = "list.php?",
+  FILTER_URL = "filter.php?",
+  RANDOM_URL = "random.php",
+}
 
 const mealsApi = createApi({
   reducerPath: "meals",
   baseQuery: fetchBaseQuery({
-    baseUrl: BASE_URL,
+    baseUrl: url?.BASE_URL,
   }),
   tagTypes: ["Meals"],
   endpoints: (builder) => ({
     getMeals: builder.query<MealsResponse, string | void>({
       query: (category = "") => ({
-        url: SEARCH_BY_URL,
+        url: url?.SEARCH_BY_URL,
         params: {
           s: category,
         },
       }),
       keepUnusedDataFor: 60,
     }),
-
     getMealsByCategories: builder.query<IMealCategories, void>({
-      query: () => `categories.php`,
+      query: () => url?.CATOGORY_URL,
     }),
-
     getMealDetail: builder.query<IMealDetail, string | void>({
-      query: (detailId) => `lookup.php?i=${detailId}`,
+      query: (detailId) => ({
+        url: url?.DETAIL_URL,
+        params: {
+          i: detailId,
+        },
+      }),
     }),
-
     getMealsArea: builder.query<IMealDetail, string | void>({
-      query: (list) => `list.php?a=${list}`,
+      query: (list) => ({
+        url: url?.LIST_URL,
+        params: {
+          a: list,
+        },
+      }),
     }),
-
     getMealsByArea: builder.query<IMealDetail, string | void>({
-      query: (area) => `filter.php?a=${area}`,
+      query: (area) => ({
+        url: url?.FILTER_URL,
+        params: {
+          a: area,
+        },
+      }),
     }),
-
     getIngredients: builder.query<IMealDetail, string | void>({
-      query: () => `list.php?i`,
+      query: (i = "") => ({
+        url: url?.LIST_URL,
+        params: {
+          i,
+        },
+      }),
     }),
     getMealsByIngredients: builder.query<any, string | void>({
-      query: (ingredient) => `filter.php?i=${ingredient}`,
+      query: (ingredient) => ({
+        url: url?.FILTER_URL,
+        params: {
+          i: ingredient,
+        },
+      }),
     }),
     getRandomMealQuery: builder.query<any, string | void>({
-      query: () => `random.php`,
+      query: () => ({
+        url: url?.RANDOM_URL,
+      }),
     }),
   }),
 });
-//www.themealdb.com/api/json/v1/1/
 
 export const {
   useGetMealsQuery,
@@ -89,7 +116,7 @@ export const {
   useLazyGetMealsByAreaQuery,
   useGetIngredientsQuery,
   useLazyGetMealsByIngredientsQuery,
-  useLazyGetRandomMealQueryQuery
+  useLazyGetRandomMealQueryQuery,
 } = mealsApi;
 
 export default mealsApi;
