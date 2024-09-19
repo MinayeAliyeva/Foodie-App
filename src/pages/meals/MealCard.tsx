@@ -31,7 +31,6 @@ const MealCard: FC<IProps> = ({ meals }) => {
 
   const handleDetail = (id: string | undefined) => {
     if (id) {
-      console.log("Detail for ID:", id);
       navigate(`/detail/${id}`);
     }
   };
@@ -46,7 +45,6 @@ const MealCard: FC<IProps> = ({ meals }) => {
     );
 
     setCardData(mapedCardData);
-    console.log("mapedCardData", mapedCardData);
 
     if (!filteredCardData) {
       return;
@@ -86,33 +84,3 @@ const MealCard: FC<IProps> = ({ meals }) => {
 
 export default MealCard;
 
-///favorites
-
-// useEffect(() => {
-//   const likedItems = JSON.parse(localStorage.getItem("likes") || "[]");
-//   const currentItem = meal || drink;
-//   if (currentItem) {
-//     const itemString = JSON.stringify(currentItem);
-//     const liked = likedItems.some(
-//       (item: IMeal | IDrink) => JSON.stringify(item) === itemString
-//     );
-//     setIsLiked(liked);
-//   }
-// }, [meal, drink]);
-
-// const handleLike = () => {
-//   const currentItem = meal || drink;
-//   if (!currentItem) return;
-//   const currentLikes = JSON.parse(localStorage.getItem("likes") || "[]");
-//   const itemString = JSON.stringify(currentItem);
-//   const isItemLiked = currentLikes.some(
-//     (item: IMeal | IDrink) => JSON.stringify(item) === itemString
-//   );
-//   const updatedLikes = isItemLiked
-//     ? currentLikes.filter(
-//         (item: IMeal | IDrink) => JSON.stringify(item) !== itemString
-//       )
-//     : [...currentLikes, currentItem];
-//   localStorage.setItem("likes", JSON.stringify(updatedLikes));
-//   setIsLiked(!isItemLiked);
-// };

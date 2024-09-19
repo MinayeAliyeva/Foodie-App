@@ -50,7 +50,7 @@ export interface IMealIngredient {
   strType: string | null;
 }
 export interface IMealsIngredients {
-  meals?: IMealIngredient[];
+  meals: any;
 }
 export interface IRandomMeal {
   idMeal: string;
@@ -69,3 +69,4 @@ export interface ICardData2 {
   idMeal: string;
   isLiked: boolean;
 }
+

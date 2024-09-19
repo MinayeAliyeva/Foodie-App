@@ -10,14 +10,15 @@ export interface Cocktail {
   [key: string]: any;
 }
 export interface CocktailsResponse {
-  drinks: Cocktail[];
+  drinks?: Cocktail[];
 }
 const enum url {
   BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/",
   SEARCH_BY_URL = "search.php",
   DETAIL_URL = "lookup.php?",
+  CATAGORIE_URL = "list.php?c=list",
+  FILTER_URL = "filter.php",
 }
-
 const cocktailsApi = createApi({
   reducerPath: "cocktails",
   baseQuery: fetchBaseQuery({
@@ -41,7 +42,18 @@ const cocktailsApi = createApi({
         },
       }),
     }),
+    getCoctailCatagorieList: builder.query<any, void>({
+      query: () => ({
+        url: url?.CATAGORIE_URL,
+      }),
+    }),
+  
   }),
 });
-export const { useGetCoctailsQuery, useLazyGetCoctailDetailQuery } = cocktailsApi;
+export const {
+  useGetCoctailsQuery,
+  useLazyGetCoctailsQuery,
+  useLazyGetCoctailDetailQuery,
+  useGetCoctailCatagorieListQuery,
+} = cocktailsApi;
 export default cocktailsApi;

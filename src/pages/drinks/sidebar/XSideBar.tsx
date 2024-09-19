@@ -1,6 +1,8 @@
 import { Layout } from "antd";
-import "./sidebar.css"
-export const XSideBar = ({ menu }:any) => {
+import "./sidebar.css";
+import { Accordion } from "@chakra-ui/react";
+import DrinkCatagorie from "./DrinkCatagorie";
+export const XSideBar = ({ getCatagorieData }: any) => {
   return (
     <Layout.Sider
       className="sidebar"
@@ -9,7 +11,9 @@ export const XSideBar = ({ menu }:any) => {
       collapsedWidth={0}
       trigger={null}
     >
-        {menu}
+      <Accordion defaultIndex={[0, 1]} allowMultiple>
+        <DrinkCatagorie getCatagorieData={getCatagorieData} />
+      </Accordion>
     </Layout.Sider>
   );
 };

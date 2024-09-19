@@ -18,11 +18,11 @@ export const XSideBar = ({
       collapsedWidth={0}
       trigger={null}
     >
-      <Accordion defaultIndex={[0, 1]} allowMultiple>
+      <Accordion defaultIndex={[0, 1, 2]} allowMultiple>
         <Catagorie getCatagorieData={getCatagorieData} />
         <MealArea getAreaData={getAreaData} />
-        <MealIngredients getIngredientData={getIngredientData} />
       </Accordion>
+      <MealIngredients getIngredientData={getIngredientData} />
     </Layout.Sider>
   );
 };

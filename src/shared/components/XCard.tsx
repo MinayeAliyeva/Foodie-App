@@ -62,7 +62,6 @@ const XCard = ({
   title,
   content,
   btnContent = "Learn More",
-  image,
   to,
   handleLike,
   handleDetail,
@@ -76,7 +75,6 @@ const XCard = ({
     isLiked,
     idMeal,
   } = data;
-  console.log("data", data);
 
   const onHandleLikeClick = () => {
     handleLike?.(idMeal);

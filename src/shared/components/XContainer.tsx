@@ -4,13 +4,20 @@ import { FC, ReactNode } from "react";
 interface IProps {
   width?: string;
   bg?: string;
-  children?: ReactNode ;
+  children?: ReactNode;
+  minHeight?: string;
   // [key: string]: string;
 }
-const XContainer: FC<IProps> = ({ width='100%', bg='white', children, ...props }) => {
+const XContainer: FC<IProps> = ({
+  width = "100%",
+  minHeight = undefined,
+  bg = "white",
+  children,
+  ...props
+}) => {
   return (
-    <Container maxW={width} bg={bg} p={"5px 20px"}>
-     {children}
+    <Container minH={minHeight} maxW={width} bg={bg} p={"5px 20px"}>
+      {children}
     </Container>
   );
 };
