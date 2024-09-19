@@ -1,72 +1,53 @@
-import {
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Button,
-  Checkbox,
-  Input,
-} from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
+import { Select, Typography } from "antd";
+import { IoSearchOutline } from "react-icons/io5";
 import { useGetIngredientsQuery } from "../../../store/apis/mealsApi";
-import { useState } from "react";
+import { FC, useState } from "react";
 
-export const MealIngredient = ({ getIngredientData }: any) => {
-  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+const { Option } = Select;
+
+interface IProps {
+  getIngredientData: (values: string[]) => void;
+}
+export const MealIngredient: FC<IProps> = ({ getIngredientData }) => {
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const { data: ingredientData } = useGetIngredientsQuery();
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedValue = event.target.value;
-    setSelectedIngredients((prevSelected) =>
-      prevSelected.includes(selectedValue)
-        ? prevSelected.filter((item) => item !== selectedValue)
-        : [...prevSelected, selectedValue]
-    );
-    //getIngredientData
-    getIngredientData(
-      selectedIngredients.includes(selectedValue)
-        ? selectedIngredients.filter((item) => item !== selectedValue)
-        : [...selectedIngredients, selectedValue]
-    );
+
+  const handleChange = (values: string[]) => {
+    getIngredientData(values);
+    setSelectedValues(values);
   };
+
   return (
-    <AccordionItem>
-      <h2>
-        <AccordionButton>
-          <Box as="span" flex="1" textAlign="left">
-            Inqredient
-          </Box>
-          <AccordionIcon />
-        </AccordionButton>
-      </h2>
-      <AccordionPanel pb={4}>
-        <Input placeholder="Axtar" />
-        <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          {ingredientData?.meals?.map((ingredient: any) => {
-            return (
-              <Box key={ingredient?.idIngredient}>
-                <Checkbox
-                  onChange={handleCheckboxChange}
-                  value={ingredient?.strIngredient}
-                >
-                  {ingredient?.strIngredient}
-                </Checkbox>
-              </Box>
-            );
-          })}
-        </Box>
-        <Button
-          style={{
-            border: "none",
-            backgroundColor: "transparent",
-            color: "#c62828",
-            fontWeight: "bold",
-            fontSize: "15px",
-          }}
-        >
-          Hamısını göstər
-        </Button>
-      </AccordionPanel>
-    </AccordionItem>
+    <Box style={{ paddingLeft: "15px", marginTop: "5px" }}>
+      <Typography style={{ fontWeight: "bold", fontSize: "18px" }}>
+        Ingredient
+      </Typography>
+      <Select
+        mode="multiple"
+        style={{
+          width: "95%",
+          minHeight: "40px",
+          color: "#000",
+          fontSize: "18px",
+          margin: "10px 0",
+        }}
+        placeholder={"Ingredient Axtar"}
+        suffixIcon={<IoSearchOutline />}
+        onChange={handleChange}
+        value={selectedValues}
+        showSearch={true}
+      >
+        {ingredientData?.meals?.map((ingredient: any) => (
+          <Option
+            key={ingredient?.strIngredient}
+            value={ingredient?.strIngredient}
+          >
+            {ingredient?.strIngredient}
+          </Option>
+        ))}
+      </Select>
+    </Box>
   );
 };
 

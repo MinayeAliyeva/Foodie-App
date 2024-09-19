@@ -56,7 +56,6 @@ export const MealArea = ({ getAreaData }: any) => {
   }, [areaData?.meals]);
   const getArea = (areas: any, size: number = 5) => {
     if (!areas) return;
-    console.log("areas", areas);
 
     const data = areas?.slice(0, size);
     setAreasState(data);

@@ -28,7 +28,6 @@ const mealsApi = createApi({
     getMeals: builder.query<MealsResponse, string | void>({
       query: (category = "") => ({
         url: url?.SEARCH_BY_URL,
-
         params: {
           s: category,
         },

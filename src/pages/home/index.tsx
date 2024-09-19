@@ -32,8 +32,7 @@ const Home = () => {
   const debouncedSearchValue = useDebounce(searchValue, 1000);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [searching, serSearching] = useState(false);
-  console.log("searching", searching);
-  console.log("debouncedSearchValue", debouncedSearchValue.length);
+
   const {
     data: mealsData,
     error: mealsError,

@@ -14,7 +14,6 @@ import { useGetCoctailsQuery } from "../../store/apis/coctailApi";
 
 export const XCocktailSlider = () => {
   const { data, error, isLoading } = useGetCoctailsQuery();
-  console.log("data", data);
 
   const overlayTextSize = useBreakpointValue({ base: "sm", md: "md" });
 
@@ -37,7 +36,7 @@ export const XCocktailSlider = () => {
 
   return (
     <Slider {...settings}>
-      {data?.drinks.map((drink: any) => (
+      {/* {data?.drinks.map((drink: any) => (
         <Box
           margin="0 10px"
           key={drink.idDrink}
@@ -84,7 +83,7 @@ export const XCocktailSlider = () => {
             </Text>
           </Box>
         </Box>
-      ))}
+      ))} */}
     </Slider>
   );
 };

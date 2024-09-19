@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Layout, Row } from "antd";
+import { Empty, Layout, Row } from "antd";
 import NavBar from "./navbar/NavBar";
 import TopicMenu from "./TopicMenu";
 import { XSideBar } from "./sidebar/XSideBar";
@@ -8,10 +8,9 @@ import {
   useLazyGetMealsByIngredientsQuery,
   useLazyGetMealsQuery,
 } from "../../store/apis/mealsApi";
-import XCard, { IDrink, IMeal } from "../../shared/components/XCard";
-import { useNavigate } from "react-router";
-import { ICardData2 } from "../../modules";
 import MealCard from "./MealCard";
+import MultiSelectBox from "../../shared/components/XSelecbox";
+import { filteredResponseData } from "../helpers";
 
 export const Meals = () => {
   const topics = ["First topic", "Second topic", "Third topic"];
@@ -19,6 +18,7 @@ export const Meals = () => {
   const [mealsAll, setMealsAll] = useState<any>({
     catagories: [],
     areas: [],
+    ingredients: [],
   });
 
   const [state, setState] = useState<{
@@ -42,26 +42,7 @@ export const Meals = () => {
   const Menu = <TopicMenu topics={topics} selectedKey={selectedKey} />;
 
   const [getAreaMeals] = useLazyGetMealsByAreaQuery();
-
-  const getIngredientData = async (ingredients: string[]) => {
-    try {
-      if (ingredients.length === 0) {
-        await getMeals();
-        setMealsAll([]);
-      } else {
-        const mealPromises = ingredients?.map((ingredient: string) =>
-          getmealsIngredient(ingredient, true)
-        );
-        const meals = await Promise.all(mealPromises);
-        const mealsData = meals.flatMap(
-          (response) => response?.data?.meals || []
-        );
-        setMealsAll((prev: any) => [...prev, ...mealsData]);
-      }
-    } catch (error) {
-      console.error("Error fetching category data:", error);
-    }
-  };
+  const [getIngredientMeals] = useLazyGetMealsByIngredientsQuery();
 
   const getSearchData = ({
     value,
@@ -86,25 +67,28 @@ export const Meals = () => {
         setState((prev) => ({ ...prev, area: [...prev.area, value] }));
       } else {
         const filteredArea = state.area.filter((area) => area !== value);
-        console.log("filteredArea", filteredArea);
         setState((prev) => ({ ...prev, area: filteredArea }));
       }
-    } else if (key === "i") {
+    }
+     else if (key === "i") {
+      console.log("ING", { value, isChecked, key });
       if (isChecked) {
         setState((prev) => ({
           ...prev,
           ingredient: [...prev.ingredient, value],
         }));
       } else {
-        const filteredIngredient = state.area.filter(
+        const filteredIngredient = state.ingredient.filter(
           (ingredient) => ingredient !== value
         );
         setState((prev) => ({ ...prev, ingredient: filteredIngredient }));
       }
     }
   };
+  const getIngredientData = (values: string[]) => {
+    setState((prev) => ({ ...prev, ingredient: values }));
+  };
   useEffect(() => {
-    let showAllFilteredMeal = { catagories: [], areas: [] } as any;
     const fetchCatagoryData = async () => {
       try {
         const mealPromises = state.category.map((catagory: string) =>
@@ -118,80 +102,118 @@ export const Meals = () => {
           ...prev,
           catagories: mealsCatagoryResponse,
         }));
-        showAllFilteredMeal.catagories = mealsCatagoryResponse;
       } catch (error) {
         console.log("error");
       }
     };
 
-    const fetcAreaData = async () => {
+    const fetchAreaData = async () => {
       try {
         const areaPromises = state.area.map((area: string) =>
           getAreaMeals(area, true)
         );
-
         const areas = await Promise.all(areaPromises);
-
         const mealsAreaResponse = areas.flatMap(
           (mealObj) => mealObj?.data?.meals || []
         );
-
         setMealsAll((prev: any) => ({
           ...prev,
           areas: mealsAreaResponse,
         }));
-        showAllFilteredMeal.areas = mealsAreaResponse;
-        console.log("mealsAreaResponse", mealsAreaResponse);
       } catch (error) {
         console.log("error");
       }
     };
-    console.log("LENGTH AREA ", state?.area?.length);
-    fetcAreaData();
-    fetchCatagoryData();
 
-    if (!state.category?.length && !state.area?.length) {
+    const fetchIngredientData = async () => {
+      try {
+        const ingredientPromises = state.ingredient.map((ingredient: string) =>
+          getIngredientMeals(ingredient, true)
+        );
+        const ingredients = await Promise.all(ingredientPromises);
+        const mealsIngredientResponse = ingredients.flatMap(
+          (mealObj) => mealObj?.data?.meals || []
+        );
+        setMealsAll((prev: any) => ({
+          ...prev,
+          ingredients: mealsIngredientResponse,
+        }));
+      } catch (error) {
+        console.log("error");
+      }
+    };
+
+    fetchCatagoryData();
+    fetchAreaData();
+    fetchIngredientData();
+
+    if (
+      !state.category?.length &&
+      !state.area?.length &&
+      !state.ingredient?.length
+    ) {
       getMeals();
-      setMealsAll([]);
+      setMealsAll({
+        catagories: [],
+        areas: [],
+        ingredients: [],
+      });
     }
-  }, [state, getAreaMeals, getMeals]);
+  }, [state, getAreaMeals, getMeals, getIngredientMeals]);
+
 
   const mealList = useMemo(() => {
-    const sameIdMeals = mealsAll?.catagories?.filter((thumbnail: any) =>
-      mealsAll?.areas?.some((meal: any) => meal.idMeal === thumbnail.idMeal)
-    );
-    return sameIdMeals;
-  }, [mealsAll]);
-
-  const meals = useMemo(() => {
-    console.log("mealsArea", mealsAll?.areas);
-    const catagorieId = mealsAll?.catagories.map((meal: any) => meal.idMeal);
-    console.log("catagorieId", catagorieId);
-    const areasId = mealsAll?.areas.map((area: any) => area.idMeal);
-    console.log("areasId", areasId);
-    const commonNumbers = catagorieId.filter((number: any) =>
-      areasId.includes(number)
-    );
-    console.log("mealsAll?.catagories", mealsAll?.catagories);
-    console.log("mealList", mealList);
-    console.log("commonNumbers", commonNumbers);
-
-    if (mealsAll?.catagories?.length && !mealsAll?.areas?.length) {
-      return mealsAll.catagories;
-    } else if (!mealsAll?.catagories?.length && mealsAll?.areas?.length) {
+    const categoryIds = mealsAll?.catagories.map((meal: any) => meal.idMeal); //catagorilerin idleri mapde
+    const areaIds = mealsAll?.areas.map((meal: any) => meal.idMeal); //area idleri mapde
+    const ingredientIds = mealsAll?.ingredients.map((meal: any) => meal.idMeal); //ingredient id mapde
+    if (state.category.length && state.area.length && state.ingredient.length) {
+      const combinedIds = [...categoryIds, ...areaIds, ...ingredientIds];
+      return filteredResponseData(combinedIds, 3, mealsAll.catagories);
+    } else if (
+      state.category.length &&
+      state.area.length &&
+      !state.ingredient.length
+    ) {
+      const combinedIds = [...categoryIds, ...areaIds];
+      return filteredResponseData(combinedIds, 2, mealsAll.catagories);
+    } else if (
+      state.category.length &&
+      !state.area.length &&
+      state.ingredient.length
+    ) {
+      const combinedIds = [...categoryIds, ...ingredientIds];
+      return filteredResponseData(combinedIds, 2, mealsAll.catagories);
+    } else if (
+      !state.category.length &&
+      state.area.length &&
+      state.ingredient.length
+    ) {
+      const combinedIds = [...areaIds, ...ingredientIds];
+      return filteredResponseData(combinedIds, 2, mealsAll.areas);
+    } else if (
+      !state.category.length &&
+      state.area.length &&
+      !state.ingredient.length
+    ) {
       return mealsAll.areas;
-    } else if (mealsAll?.catagories?.length && mealsAll?.areas?.length) {
-      return mealList;
+    } else if (
+      state.category.length &&
+      !state.area.length &&
+      !state.ingredient.length
+    ) {
+      return mealsAll.catagories;
+    } else if (
+      !state.category.length &&
+      !state.area.length &&
+      state.ingredient.length
+    ) {
+      // a
+      return mealsAll.ingredients;
     } else {
       return data?.meals;
     }
-  }, [mealsAll.catagories, mealList, data?.meals, mealsAll.areas]);
-
-
-
-
-
-
+  }, [mealsAll, data?.meals, state]);
+  console.log("mealList", mealList);
 
   return (
     <>
@@ -207,10 +229,32 @@ export const Meals = () => {
             style={{ fontSize: "25px", color: "#C62828", fontWeight: "bold" }}
           >
             {" "}
-            VERI SAYI: {meals?.length}
+            VERI SAYI: {mealList?.length}
           </Row>
-          <Row gutter={[16, 16]}>
-            <MealCard meals={meals} />
+          <Row
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            gutter={[16, 16]}
+          >
+            {mealList?.length ? (
+              <MealCard meals={mealList} />
+            ) : (
+              <Empty
+                description="No meals found"
+                style={{
+                  fontSize: "24px",
+                  color: "#C62828",
+                  height: "300px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              />
+            )}
           </Row>
         </Layout.Content>
       </Layout>
