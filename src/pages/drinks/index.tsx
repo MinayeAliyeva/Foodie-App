@@ -10,6 +10,7 @@ import {
   useGetCoctailsQuery,
   useLazyGetCoctailsQuery,
   useLazyGetCoctailByGlasesQuery,
+  useLazyGetCoctailByIngredientsQuery,
 } from "../../store/apis/coctailApi";
 import DrinkCard from "./DrinkCard";
 import { filteredResponseData } from "../helpers";
@@ -20,7 +21,8 @@ export const Drinks = () => {
   const [getCoctailByGlasses, { data: glassesData }] =
     useLazyGetCoctailByGlasesQuery();
   const [getCoctailByCatagory] = useLazyGetCoctailByCatagoryQuery<any>();
-  const [mealsAll, setMealsAll] = useState<any>({
+  const [getIngredientCoctails] = useLazyGetCoctailByIngredientsQuery();
+  const [coctailAll, setMealsAll] = useState<any>({
     catagories: [],
     glasses: [],
     ingredients: [],
@@ -87,9 +89,24 @@ export const Drinks = () => {
         );
         setState((prev) => ({ ...prev, glasses: filteredGlasses }));
       }
+    } else if (key === "i") {
+      console.log("ING", { value, isChecked, key });
+      if (isChecked) {
+        setState((prev) => ({
+          ...prev,
+          ingredient: [...prev.ingredient, value],
+        }));
+      } else {
+        const filteredIngredient = state.ingredient.filter(
+          (ingredient) => ingredient !== value
+        );
+        setState((prev) => ({ ...prev, ingredient: filteredIngredient }));
+      }
     }
   };
-
+  const getIngredientData = (values: string[]) => {
+    setState((prev) => ({ ...prev, ingredient: values }));
+  };
   useEffect(() => {
     const fetchCatagoryData = async () => {
       try {
@@ -129,6 +146,24 @@ export const Drinks = () => {
         console.log("error");
       }
     };
+    const fetchIngredientData = async () => {
+      try {
+        const ingredientPromises = state.ingredient.map((ingredient: any) =>
+          getIngredientCoctails(ingredient, true)
+        );
+        const ingredients = await Promise.all(ingredientPromises);
+        const coctailsIngredientResponse = ingredients.flatMap(
+          (mealObj) => mealObj?.data?.drinks || []
+        );
+        setMealsAll((prev: any) => ({
+          ...prev,
+          ingredients: coctailsIngredientResponse,
+        }));
+      } catch (error) {
+        console.log("error");
+      }
+    };
+    fetchIngredientData();
     fetchCatagoryData();
     fetchGlassesData();
     if (!state.category?.length) {
@@ -137,32 +172,71 @@ export const Drinks = () => {
         catagories: [],
       });
     }
-  }, [state, getCoctails, getCoctailByCatagory, getCoctailByGlasses]);
+  }, [
+    state,
+    getCoctails,
+    getCoctailByCatagory,
+    getCoctailByGlasses,
+    getIngredientCoctails,
+  ]);
 
   const drinks = useMemo(() => {
     const categoryIds =
-      mealsAll?.catagories?.map((drink: any) => drink.idDrink) || [];
+      coctailAll?.catagories?.map((drink: any) => drink.idDrink) || [];
     const glassesIds =
-      mealsAll?.glasses?.map((drink: any) => drink.idDrink) || [];
+      coctailAll?.glasses?.map((drink: any) => drink.idDrink) || [];
     const ingredientIds =
-      mealsAll?.ingredients?.map((drink: any) => drink.idDrink) || [];
+      coctailAll?.ingredients?.map((drink: any) => drink.idDrink) || [];
     if (
+      state.category.length &&
+      state.glasses.length &&
+      state.ingredient.length
+    ) {
+      const combinedIds = [...categoryIds, ...glassesIds, ...ingredientIds];
+      return filteredResponseData(combinedIds, 3, coctailAll.catagories);
+    } else if (
       state.category.length &&
       state.glasses.length &&
       !state.ingredient.length
     ) {
-      console.log("GID");
       const combinedIds = [...categoryIds, ...glassesIds];
-      return filteredResponseData(combinedIds, 2, mealsAll.catagories);
-    }
-    if (state.category.length) {
-      return mealsAll.catagories;
-    }
-    if (state.glasses.length) {
-      return mealsAll.glasses;
+      return filteredResponseData(combinedIds, 2, coctailAll.catagories);
+    } else if (
+      state.category.length &&
+      !state.glasses.length &&
+      state.ingredient.length
+    ) {
+      const combinedIds = [...categoryIds, ...ingredientIds];
+      return filteredResponseData(combinedIds, 2, coctailAll.catagories);
+    } else if (
+      !state.category.length &&
+      state.glasses.length &&
+      state.ingredient.length
+    ) {
+      const combinedIds = [...glassesIds, ...ingredientIds];
+      return filteredResponseData(combinedIds, 2, coctailAll.areas);
+    } else if (
+      !state.category.length &&
+      state.glasses.length &&
+      !state.ingredient.length
+    ) {
+      return coctailAll.areas;
+    } else if (
+      state.category.length &&
+      !state.glasses.length &&
+      !state.ingredient.length
+    ) {
+      return coctailAll.catagories;
+    } else if (
+      !state.category.length &&
+      !state.glasses.length &&
+      state.ingredient.length
+    ) {
+      // a
+      return coctailAll.ingredients;
     }
     return mainData?.drinks || [];
-  }, [mealsAll, mainData?.drinks, state]);
+  }, [coctailAll, mainData?.drinks, state]);
 
   return (
     <>
@@ -171,6 +245,7 @@ export const Drinks = () => {
         <XSideBar
           getGlassesData={getSearchData}
           getCatagorieData={getSearchData}
+          getIngredientData={getIngredientData}
           menu={Menu}
         />
         <Layout.Content className="content">

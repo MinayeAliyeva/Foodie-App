@@ -18,6 +18,7 @@ const enum url {
   DETAIL_URL = "lookup.php?",
   CATAGORIE_URL = "list.php?c=list",
   GLASES_URL = "list.php?g=list",
+  INGREDIENTS_URL = "list.php?i=list",
   FILTER_URL = "filter.php?",
 }
 const cocktailsApi = createApi({
@@ -66,6 +67,19 @@ const cocktailsApi = createApi({
         },
       }),
     }),
+    getCoctailIngredientsList: builder.query<any, void>({
+      query: () => ({
+        url: url?.INGREDIENTS_URL,
+      }),
+    }),
+    getCoctailByIngredients: builder.query<any | string, void>({
+      query: (ingredient) => ({
+        url: url?.FILTER_URL,
+        params: {
+          i: ingredient,
+        },
+      }),
+    }),
   }),
 });
 export const {
@@ -76,5 +90,7 @@ export const {
   useLazyGetCoctailByCatagoryQuery,
   useGetCoctailGlasesListQuery,
   useLazyGetCoctailByGlasesQuery,
+  useGetCoctailIngredientsListQuery,
+  useLazyGetCoctailByIngredientsQuery,
 } = cocktailsApi;
 export default cocktailsApi;
