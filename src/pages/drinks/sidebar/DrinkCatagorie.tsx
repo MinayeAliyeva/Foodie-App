@@ -67,16 +67,14 @@ const DrinkCatagorie = ({ getCatagorieData }: any) => {
         </AccordionButton>
       </h2>
       <AccordionPanel pb={4}>
-        <Input placeholder="Ara" onChange={handleChange} />
+        <Input placeholder="Axtar" onChange={handleChange} />
         <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {catagorieState?.map((catagorie: any) => (
             <Box key={catagorie?.idCategory}>
               <Checkbox
                 value={catagorie?.strCategory}
                 onChange={handleChangeChecBox}
-                // isChecked={selectedCategories.includes(
-                //   catagorie?.strCategory || ""
-                // )}
+           
               >
                 {catagorie?.strCategory}
               </Checkbox>
