@@ -17,7 +17,7 @@ import {
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowRightLong } from "react-icons/fa6";
-import { ICardData, ICardData2 } from "../../modules";
+import { ICardData, IFavoriteData } from "../../modules";
 
 export interface IMeal {
   idMeal?: string;
@@ -55,7 +55,7 @@ interface XCardProps {
   isLiked?: boolean;
   handleLike?: (idMeal: string) => void;
   handleDetail?: (id?: string) => void;
-  data: ICardData2;
+  data: IFavoriteData;
 }
 
 const XCard = ({
@@ -73,14 +73,14 @@ const XCard = ({
     itemCategory,
     itemIngredients,
     isLiked,
-    idMeal,
+    id,
   } = data;
 
   const onHandleLikeClick = () => {
-    handleLike?.(idMeal);
+    handleLike?.(id);
   };
-  const onHandleDetail = () => handleDetail?.(data?.idMeal);
-
+  const onHandleDetail = () => handleDetail?.(data?.id);
+   
   return (
     <Card
       m="10px 10px"

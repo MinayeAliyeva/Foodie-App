@@ -22,6 +22,7 @@ import {
 import { useGetCoctailsQuery, useGetMealsQuery } from "../../store";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useLazyGetRandomMealQueryQuery } from "../../store/apis/mealsApi";
+import { Typography } from "antd";
 
 const MealCard = lazy(() => import("./MealCard"));
 const DrinkCard = lazy(() => import("./DrinkCard"));
@@ -31,7 +32,8 @@ const Home = () => {
   const [randomData, setRandomData] = useState<any>(null);
   const debouncedSearchValue = useDebounce(searchValue, 1000);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [searching, serSearching] = useState(false);
+  const [searching, setSearching] = useState(false);
+  // const [memoryList, setMemoryList] = useState<{ meals: any[], drinks: any[] }>({ meals: [], drinks: [] });
 
   const {
     data: mealsData,
@@ -56,12 +58,28 @@ const Home = () => {
       onOpen();
     }
     if (searching) {
-      serSearching(false);
+      setSearching(false);
     }
   }, [data, onOpen, searching]);
 
+  // useEffect(() => {
+  //   if (mealsData?.meals?.length!! > 0) {
+  //     setMemoryList(prev => ({
+  //       ...prev,
+  //       meals: [...prev.meals, ...mealsData?.meals!!],
+  //     }));
+  //   }
+
+  //   if (drinksData?.drinks?.length!! > 0) {
+  //     setMemoryList(prev => ({
+  //       ...prev,
+  //       drinks: [...prev.drinks, ...drinksData?.drinks!!],
+  //     }));
+  //   }
+  // }, [mealsData, drinksData]);
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    serSearching(true);
+    setSearching(true);
     setSearchValue(event.target.value);
   };
 
@@ -83,10 +101,20 @@ const Home = () => {
           _focus={{ borderColor: "teal.400", boxShadow: "0 0 0 1px teal.400" }}
           width="80%"
         />
+
         <Button onClick={() => trigger()} ml={4} colorScheme="teal">
-          Random Bir Yemek Ya İçecek
+          Random Bir Yemek
+        </Button>
+        <Button ml={4} colorScheme="teal">
+          Random Bir İçecek
         </Button>
       </Flex>
+
+      {searchValue.length > 0 && searchValue.length < 2 && (
+        <Typography style={{ color: "red", fontWeight: "bold" }} color="red">
+          En az 2 karakter girmelisiniz
+        </Typography>
+      )}
       <VStack spacing={8} align="start">
         <Stack spacing={4} w="full">
           <Heading as="h3" size="lg" color="teal.500">

@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
-import { useLazyGetMealDetailQuery } from "../../store/apis/mealsApi";
+import { useLazyGetMealDetailQuery } from "../../../store/apis/mealsApi";
 import {
   Box,
   Button,
@@ -12,9 +12,9 @@ import {
   Alert,
   AlertIcon,
 } from "@chakra-ui/react";
-import { useLazyGetCoctailDetailQuery } from "../../store/apis/coctailApi";
+import { useLazyGetCoctailDetailQuery } from "../../../store/apis/coctailApi";
 
-const Detail = () => {
+const MealDetail = () => {
   const [
     getMealDetail,
     { data: mealData, isLoading: mealLoading, error: mealError },
@@ -115,38 +115,8 @@ const Detail = () => {
       ) : (
         <Text>Meal details not found</Text>
       )}
-
-      {detailCoctail && (
-        <Box
-          borderWidth="1px"
-          borderRadius="lg"
-          padding="20px"
-          boxShadow="lg"
-          mt="20px"
-        >
-          <Heading as="h1" size="xl" textAlign="center" mb="20px">
-            {detailCoctail[0].strDrink}
-          </Heading>
-          <Image
-            src={detailCoctail[0].strDrinkThumb}
-            alt={detailCoctail[0].strDrink}
-            borderRadius="lg"
-            mb="20px"
-          />
-          <VStack spacing={4} align="start">
-            <Box>
-              <Text fontWeight="bold">Instructions:</Text>
-              <Text>{detailCoctail[0].strInstructions}</Text>
-            </Box>
-            <Box>
-              <Text fontWeight="bold">Category:</Text>
-              <Text>{detailCoctail[0].strCategory}</Text>
-            </Box>
-          </VStack>
-        </Box>
-      )}
     </Box>
   );
 };
 
-export default Detail;
+export default MealDetail;

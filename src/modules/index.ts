@@ -61,12 +61,12 @@ export interface IRandomMeal {
   strInstructions: string;
   strMealThumb: string;
 }
-export interface ICardData2 {
+export interface IFavoriteData{
   itemTitle: string;
   itemThumb: string;
   itemCategory: string;
   itemIngredients: string[];
-  idMeal: string;
+  id: string;
   isLiked: boolean;
 }
 
