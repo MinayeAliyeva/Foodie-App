@@ -8,6 +8,7 @@ import { useMapRoutes } from "./routes";
 
 function App() {
   const myRoute = useMapRoutes();
+  throw new Error();
   return (
     <>
       <>{myRoute}</>
