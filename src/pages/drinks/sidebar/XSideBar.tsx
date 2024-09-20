@@ -3,7 +3,7 @@ import "./sidebar.css";
 import { Accordion } from "@chakra-ui/react";
 import DrinkCatagorie from "./DrinkCatagorie";
 import DrinkGlasses from "./DrinkGlasses";
-export const XSideBar = ({ getCatagorieData }: any) => {
+export const XSideBar = ({ getCatagorieData,getGlassesData }: any) => {
   return (
     <Layout.Sider
       className="sidebar"
@@ -14,7 +14,7 @@ export const XSideBar = ({ getCatagorieData }: any) => {
     >
       <Accordion defaultIndex={[0, 1]} allowMultiple>
         <DrinkCatagorie getCatagorieData={getCatagorieData} />
-        <DrinkGlasses/>
+        <DrinkGlasses getGlassesData={getGlassesData} />
       </Accordion>
     </Layout.Sider>
   );

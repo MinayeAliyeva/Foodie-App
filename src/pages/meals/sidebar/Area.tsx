@@ -17,7 +17,6 @@ export const MealArea = ({ getAreaData }: any) => {
   const [areasState, setAreasState] = useState<any>([]);
   const [value, setValue] = useState("");
   const { data: areaData } = useGetMealsAreaQuery();
-  console.log("areaData",areaData);
   
   useEffect(() => {
     if (areaData?.meals) {

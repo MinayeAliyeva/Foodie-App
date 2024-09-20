@@ -37,7 +37,6 @@ const SelecBox: FC<IProps> = ({ getIngredientData }) => {
       // showSearch={true}
       suffixIcon={<IoSearchOutline />}
       onSelect={(e) => {
-        console.log("value", e);
       }}
     >
       {ingredientData?.meals?.map((ingredient: any) => {

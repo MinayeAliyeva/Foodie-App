@@ -60,7 +60,7 @@ const cocktailsApi = createApi({
     }),
     getCoctailByGlases: builder.query<any, void>({
       query: (glass) => ({
-        url: url?.GLASES_URL,
+        url: url?.FILTER_URL,
         params: {
           g: glass,
         },
@@ -75,5 +75,6 @@ export const {
   useGetCoctailCatagorieListQuery,
   useLazyGetCoctailByCatagoryQuery,
   useGetCoctailGlasesListQuery,
+  useLazyGetCoctailByGlasesQuery,
 } = cocktailsApi;
 export default cocktailsApi;
