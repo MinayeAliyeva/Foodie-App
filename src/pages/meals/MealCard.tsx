@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { ICardData2, IMeal, Meal } from "../../modules";
+import { IFavoriteData, IMeal, Meal } from "../../modules";
 import XCard from "../../shared/components/XCard";
 import { useNavigate } from "react-router";
 interface IProps {
@@ -7,12 +7,12 @@ interface IProps {
 }
 
 const MealCard: FC<IProps> = ({ meals }) => {
-  const [cardData, setCardData] = useState<ICardData2[]>([]);
-  const [isLiked, setIsLiked] = useState<boolean>(false);
   const storedFavorites = localStorage.getItem("likes");
+  const [cardData, setCardData] = useState<IFavoriteData[]>([]);
+  const [isLiked, setIsLiked] = useState<boolean>(false);
   const navigate = useNavigate();
   useEffect(() => {
-    const data: ICardData2[] = meals?.map((meal: Meal) => ({
+    const data: IFavoriteData[] = meals?.map((meal: Meal) => ({
       itemTitle: meal?.strMeal,
       itemThumb: meal?.strMealThumb,
       itemCategory: meal?.strCategory,
@@ -21,9 +21,9 @@ const MealCard: FC<IProps> = ({ meals }) => {
         meal?.strIngredient2,
         meal?.strIngredient3,
       ].filter(Boolean),
-      idMeal: meal?.idMeal,
+      id: meal?.idMeal,
       isLiked: !!JSON.parse(storedFavorites!)?.find(
-        (favorie: any) => favorie?.idMeal === meal?.idMeal
+        (favorie: any) => favorie?.id === meal?.idMeal
       ),
     }));
     setCardData(data);
@@ -31,15 +31,15 @@ const MealCard: FC<IProps> = ({ meals }) => {
 
   const handleDetail = (id: string | undefined) => {
     if (id) {
-      navigate(`/detail/${id}`);
+      navigate(`/meal-detail/${id}`);
     }
   };
 
   const handleLike = (idMeal: string) => {
-    const filteredCardData = cardData?.find((meal) => meal?.idMeal === idMeal);
+    const filteredCardData = cardData?.find((meal) => meal?.id === idMeal);
 
     const mapedCardData = cardData.map((data) =>
-      data?.idMeal === filteredCardData?.idMeal
+      data?.id === filteredCardData?.id
         ? { ...data, isLiked: !data?.isLiked }
         : data
     );
@@ -54,7 +54,7 @@ const MealCard: FC<IProps> = ({ meals }) => {
     const itemString = JSON.stringify({ ...filteredCardData, isLiked: true });
 
     const isItemLiked = currentLikes.some(
-      (item: ICardData2) => JSON.stringify(item) === itemString
+      (item: IFavoriteData) => JSON.stringify(item) === itemString
     );
     const updatedLikes = isItemLiked
       ? currentLikes.filter(
@@ -73,7 +73,7 @@ const MealCard: FC<IProps> = ({ meals }) => {
         <XCard
           isLiked={isLiked}
           handleLike={handleLike}
-          key={meal?.idMeal}
+          key={meal?.id}
           data={meal}
           handleDetail={handleDetail}
         />

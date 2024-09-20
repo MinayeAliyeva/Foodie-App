@@ -2,18 +2,29 @@ import { Col } from "antd";
 import React, { FC, useEffect, useState } from "react";
 import { useGetCoctailsQuery } from "../../store";
 import { Cocktail, CocktailsResponse } from "../../store/apis/coctailApi";
-import { ICardData2 } from "../../modules";
+import { IDrink, IFavoriteData } from "../../modules";
 import XCard from "../../shared/components/XCard";
+import { useNavigate } from "react-router";
 
 interface IProps {
   drinks?: Cocktail[] | undefined;
 }
 const DrinkCard: FC<IProps> = ({ drinks }) => {
-  const [cardData, setCardData] = useState<any>([]);
+  const storedFavorites = localStorage.getItem("likes");
+  const [cardData, setCardData] = useState<IFavoriteData[]>([]);
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const navigate = useNavigate();
+  
   //   console.log("drinks", drinks);
-
+  const handleDetail = (id: string | undefined) => {
+    console.log("id",id);
+    
+    if (id) {
+      navigate(`/coctail-detail/${id}`);
+    }
+  };
   useEffect(() => {
-    const data = drinks?.map((drink: Cocktail) => ({
+    const data:IFavoriteData[] = drinks?.map((drink: Cocktail) => ({
       itemTitle: drink?.strDrink,
       itemThumb: drink?.strDrinkThumb,
       itemCategory: drink?.strCategory,
@@ -22,19 +33,53 @@ const DrinkCard: FC<IProps> = ({ drinks }) => {
         drink?.strIngredient2,
         drink?.strIngredient3,
       ].filter(Boolean),
-      idMeal: drink?.idMeal,
-    }));
+      id: drink?.idDrink,
+      isLiked: !!JSON.parse(storedFavorites!)?.find(
+        (favorie: any) => favorie?.id === drink?.idDrink
+      ),
+    })) as IFavoriteData[];
     setCardData(data);
   }, [drinks]);
+  const handleLike = (idDrink: string) => {
+    const filteredCardData = cardData?.find((drink) => drink?.id === idDrink);
+
+    const mapedCardData = cardData.map((data) =>
+      data?.id === filteredCardData?.id
+        ? { ...data, isLiked: !data?.isLiked }
+        : data
+    );
+
+    setCardData(mapedCardData);
+
+    if (!filteredCardData) {
+      return;
+    }
+
+    const currentLikes = JSON.parse(localStorage.getItem("likes") || "[]");
+    const itemString = JSON.stringify({ ...filteredCardData, isLiked: true });
+
+    const isItemLiked = currentLikes.some(
+      (item: IFavoriteData) => JSON.stringify(item) === itemString
+    );
+    const updatedLikes = isItemLiked
+      ? currentLikes.filter(
+          (item: IDrink) => JSON.stringify(item) !== itemString
+        )
+      : [...currentLikes, { ...filteredCardData, isLiked: true }];
+
+    localStorage.setItem("likes", JSON.stringify(updatedLikes));
+
+    setIsLiked(!isItemLiked);
+  };
   return (
     <>
-      {cardData?.map((drink:any) => (
+      {cardData?.map((drink: any) => (
         <XCard
-        //   isLiked={isLiked}
-        //   handleLike={handleLike}
+          isLiked={isLiked}
+          handleLike={handleLike}
           key={drink?.idDrink}
           data={drink}
-        //   handleDetail={handleDetail}
+          handleDetail={handleDetail}
         />
       ))}
     </>

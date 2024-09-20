@@ -5,7 +5,8 @@ import { MyRouterObject } from "../modules";
 import { Meals } from "../pages/meals";
 import { Drinks } from "../pages/drinks";
 import Favotites from "../pages/favorites";
-import Detail from "../pages/detail";
+import MealDetail from "../pages/meals/detail/MealDetail";
+import DrinkDetail from "../pages/drinks/detail/DrinkDetail";
 
 export const routes: MyRouterObject[] = [
   {
@@ -33,8 +34,12 @@ export const routes: MyRouterObject[] = [
         element: <Favotites />,
       },
       {
-        path: "detail/:id",
-        element: <Detail />,
+        path: "meal-detail/:id",
+        element: <MealDetail />,
+      },
+      {
+        path: "coctail-detail/:id",
+        element: <DrinkDetail />,
       },
     ],
   },

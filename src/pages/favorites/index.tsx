@@ -9,15 +9,24 @@ const delay = async (ms: number) => {
   });
 };
 const Favorites = () => {
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
   const storedFavorites = localStorage.getItem("likes");
   const favorites = storedFavorites ? JSON.parse(storedFavorites) : [];
+  
+  const [loading, setLoading] = useState(false);
   const [favoriteList, setFavoriteList] = useState(favorites);
-  const navigate = useNavigate();
-  const handleLike = (idMeal: string) => {
+
+
+  const handleLike = (id: string) => {
+    console.log({id});
+    console.log({favoriteList});
+    
     const filteredFavoriteList = favoriteList?.filter(
-      (favorite: any) => favorite?.idMeal !== idMeal
+      (favorite: any) => favorite?.id !== id
     );
+    console.log({filteredFavoriteList});
+    
     setFavoriteList(filteredFavoriteList);
     localStorage.setItem("likes", JSON.stringify(filteredFavoriteList));
   };
@@ -25,7 +34,7 @@ const Favorites = () => {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      await delay(800).finally(() => setLoading(false));
+      await delay(500).finally(() => setLoading(false));
     })();
   }, [favoriteList]);
 
