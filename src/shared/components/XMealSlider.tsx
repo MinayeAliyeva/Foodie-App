@@ -14,7 +14,6 @@ import { useGetMealsQuery } from "../../store/apis/mealsApi";
 
 export const XMealSlider = () => {
   const { data, error, isLoading } = useGetMealsQuery();
-  console.log("data", data);
 
   const overlayTextSize = useBreakpointValue({ base: "sm", md: "md" });
 

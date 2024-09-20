@@ -9,7 +9,6 @@ import {
   useLazyGetMealsQuery,
 } from "../../store/apis/mealsApi";
 import MealCard from "./MealCard";
-import MultiSelectBox from "../../shared/components/XSelecbox";
 import { filteredResponseData } from "../helpers";
 
 export const Meals = () => {

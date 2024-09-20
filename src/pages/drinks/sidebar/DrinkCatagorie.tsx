@@ -9,12 +9,13 @@ import {
   Input,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { useGetCoctailCatagorieListQuery } from "../../../store/apis/coctailApi";
+import { useGetCoctailCatagorieListQuery, useLazyGetCoctailByGlasesQuery } from "../../../store/apis/coctailApi";
 
 const DrinkCatagorie = ({ getCatagorieData }: any) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [value, setValue] = useState("");
   const { data: drinkCatagories } = useGetCoctailCatagorieListQuery<any>();
+
   const [catagorieState, setCatagorieState] = useState<any>([]);
   useEffect(() => {
     if (drinkCatagories?.drinks) {
@@ -23,9 +24,7 @@ const DrinkCatagorie = ({ getCatagorieData }: any) => {
   }, [drinkCatagories]);
   const handleChangeChecBox = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedValue = event.target.value;
-    console.log("test");
-
-    console.log("selectedValue", selectedValue);
+   
 
     setSelectedCategories((prevSelected) =>
       prevSelected.includes(selectedValue)
@@ -39,12 +38,10 @@ const DrinkCatagorie = ({ getCatagorieData }: any) => {
     });
   };
   const getCatagorie = (categories?: any, size: number = 5) => {
-    console.log("categories", categories);
     if (!categories) return;
     const data = categories?.slice(0, size);
     setCatagorieState(data);
   };
-  console.log("drinkCatagories", drinkCatagories);
   const handleChange = (event: any) => {
     setValue(event.target.value);
     const filteredCatagories = drinkCatagories?.drinks.filter(
@@ -58,7 +55,6 @@ const DrinkCatagorie = ({ getCatagorieData }: any) => {
   const checkingEquality =
     catagorieState?.length === drinkCatagories?.drinks?.length;
 
-  console.log("checkingEquality", checkingEquality);
 
   return (
     <AccordionItem>

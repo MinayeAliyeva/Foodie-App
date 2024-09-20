@@ -14,6 +14,6 @@ export const filteredResponseData = <T = any>(
     (id) => countMap[id] === num
   );
   return countedData.map((id: any) =>
-    data.find((meal: any) => meal.idMeal === id)
+    data.find((meal: any) => meal.idMeal === id || meal.idDrink === id)
   );
 };
