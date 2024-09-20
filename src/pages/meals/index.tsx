@@ -69,20 +69,20 @@ export const Meals = () => {
         setState((prev) => ({ ...prev, area: filteredArea }));
       }
     }
-     else if (key === "i") {
-      console.log("ING", { value, isChecked, key });
-      if (isChecked) {
-        setState((prev) => ({
-          ...prev,
-          ingredient: [...prev.ingredient, value],
-        }));
-      } else {
-        const filteredIngredient = state.ingredient.filter(
-          (ingredient) => ingredient !== value
-        );
-        setState((prev) => ({ ...prev, ingredient: filteredIngredient }));
-      }
-    }
+    //  else if (key === "i") {
+    //   console.log("ING", { value, isChecked, key });
+    //   if (isChecked) {
+    //     setState((prev) => ({
+    //       ...prev,
+    //       ingredient: [...prev.ingredient, value],
+    //     }));
+    //   } else {
+    //     const filteredIngredient = state.ingredient.filter(
+    //       (ingredient) => ingredient !== value
+    //     );
+    //     setState((prev) => ({ ...prev, ingredient: filteredIngredient }));
+    //   }
+    // }
   };
   const getIngredientData = (values: string[]) => {
     setState((prev) => ({ ...prev, ingredient: values }));
