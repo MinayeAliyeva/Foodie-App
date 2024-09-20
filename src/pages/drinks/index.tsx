@@ -6,20 +6,23 @@ import { XSideBar } from "./sidebar/XSideBar";
 import XCard from "../../shared/components/XCard";
 import {
   CocktailsResponse,
+  useLazyGetCoctailByCatagoryQuery,
   useGetCoctailsQuery,
   useLazyGetCoctailsQuery,
 } from "../../store/apis/coctailApi";
 import DrinkCard from "./DrinkCard";
-import { useLazyGetMealsQuery } from "../../store/apis/mealsApi";
 
 export const Drinks = () => {
   const topics = ["First topic", "Second topic", "Third topic"];
-  const [getCoctails, { data }] = useLazyGetCoctailsQuery();
+  const [getCoctails, { data:mainData }] = useLazyGetCoctailsQuery();
+  const [getCoctailByCatagory, { data: catagoryResponseData }] =
+    useLazyGetCoctailByCatagoryQuery<any>();
   const [mealsAll, setMealsAll] = useState<any>({
     catagories: [],
     areas: [],
     ingredients: [],
   });
+  console.log("mainData", mainData);
 
   const [contentIndex, setContentIndex] = useState(0);
   const [selectedKey, setSelectedKey] = useState("0");
@@ -74,12 +77,14 @@ export const Drinks = () => {
       }
     }
   };
+  console.log("state.catagory", state?.category);
+
   useEffect(() => {
     const fetchCatagoryData = async () => {
       try {
-        const coctailCatagoryPromises = state.category.map((catagory: string) =>
-          getCoctails(catagory, true)
-        );
+        const coctailCatagoryPromises = state.category.map((catagory: any) => {
+          return getCoctailByCatagory(catagory, true);
+        });
 
         const coctails = await Promise.all(coctailCatagoryPromises);
         console.log("coctails", coctails);
@@ -103,17 +108,18 @@ export const Drinks = () => {
         catagories: [],
       });
     }
-  }, [state, getCoctails]);
+  }, [state, getCoctails, getCoctailByCatagory]);
 
   const drinks = useMemo(() => {
     if (state.category.length) {
       return mealsAll.catagories;
     } else {
-      return data?.drinks;
+      return mainData?.drinks;
     }
-  }, [mealsAll, state.category.length,data?.drinks]);
+  }, [mealsAll, state.category.length, mainData?.drinks]);
   console.log("mealsAll", mealsAll);
   console.log("state", state);
+  console.log("data", mainData);
 
   return (
     <>
