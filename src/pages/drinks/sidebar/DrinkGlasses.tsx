@@ -17,13 +17,23 @@ import {
 const DrinkGlasses = ({ getGlassesData }: any) => {
   const [glassesState, setGlassesState] = useState<any>([]);
   const [selectedGlasses, setSelectedGlasses] = useState<string[]>([]);
+  const [value, setValue] = useState("");
   const { data: glasesData } = useGetCoctailGlasesListQuery();
+
+  // Başlangıçta yalnızca 5 bardak gösterecek şekilde güncellendi
+  const geGlasses = (glasses?: any, size: number = 5) => {
+    if (!glasses) return;
+    const data = glasses.slice(0, size);
+    setGlassesState(data);
+  };
 
   useEffect(() => {
     if (glasesData?.drinks) {
-      setGlassesState(glasesData?.drinks);
+      // Başlangıçta 5 bardak göster
+      geGlasses(glasesData.drinks, 5);
     }
   }, [glasesData]);
+
   const handleChangeChecBox = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedValue = event.target.value;
     setSelectedGlasses((prevSelected) =>
@@ -37,6 +47,17 @@ const DrinkGlasses = ({ getGlassesData }: any) => {
       key: "g",
     });
   };
+  const handleChange = (event: any) => {
+    setValue(event.target.value);
+    const filteredGlasses = glasesData?.drinks?.filter((glass: any) =>
+      glass?.strGlass
+        .toLowerCase()
+        .includes(event.target.value.toLowerCase())
+    );
+    setGlassesState(filteredGlasses);
+  };
+  const checkingEquality = glassesState.length === glasesData?.drinks?.length;
+
   return (
     <AccordionItem>
       <h2>
@@ -48,14 +69,11 @@ const DrinkGlasses = ({ getGlassesData }: any) => {
         </AccordionButton>
       </h2>
       <AccordionPanel pb={4}>
-        <Input placeholder="Axtar" />
+        <Input placeholder="Axtar" onChange={handleChange} />
         <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          {glassesState?.map((glass: any) => (
+          {glassesState.map((glass: any) => (
             <Box key={glass?.strGlass}>
-              <Checkbox
-                value={glass?.strGlass}
-                onChange={handleChangeChecBox}
-              >
+              <Checkbox value={glass?.strGlass} onChange={handleChangeChecBox}>
                 {glass?.strGlass}
               </Checkbox>
             </Box>
@@ -69,14 +87,14 @@ const DrinkGlasses = ({ getGlassesData }: any) => {
             fontWeight: "bold",
             fontSize: "15px",
           }}
-          //   onClick={() =>
-          //     getArea(
-          //       areaData?.meals,
-          //       checkingEquality ? minMealAreaLength : areaData?.meals?.length
-          //     )
-          //   }
+          onClick={() =>
+            geGlasses(
+              glasesData?.drinks,
+              checkingEquality ? 5 : glasesData?.drinks?.length
+            )
+          }
         >
-          {/* {checkingEquality ? "Gizle" : "Hepsini Göster"} */}
+          {checkingEquality ? "Gizle" : "Hepsini Göster"}
         </Button>
       </AccordionPanel>
     </AccordionItem>
