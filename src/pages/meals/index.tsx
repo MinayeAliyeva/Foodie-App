@@ -213,7 +213,6 @@ export const Meals = () => {
       return data?.meals;
     }
   }, [mealsAll, data?.meals, state]);
-  console.log("mealList", mealList);
 
   return (
     <>
