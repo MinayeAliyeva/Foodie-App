@@ -12,36 +12,30 @@ import {
   Alert,
   AlertIcon,
 } from "@chakra-ui/react";
-import { useLazyGetCoctailDetailQuery } from "../../../store/apis/coctailApi";
 
 const MealDetail = () => {
   const [
     getMealDetail,
     { data: mealData, isLoading: mealLoading, error: mealError },
   ] = useLazyGetMealDetailQuery();
-  const [
-    getCoctailDetail,
-    { data: coctailData, isLoading: coctailLoading, error: coctailError },
-  ] = useLazyGetCoctailDetailQuery();
+
 
   const [isExpanded, setIsExpanded] = useState(false);
   const { id } = useParams<{ id: string }>();
 
   const detailMeal = mealData?.meals;
-  const detailCoctail = coctailData?.drinks;
 
   useEffect(() => {
     if (id) {
       getMealDetail(id, true);
-      getCoctailDetail(id, true);
     }
-  }, [id, getMealDetail, getCoctailDetail]);
+  }, [id, getMealDetail]);
 
   const handleToggle = () => {
     setIsExpanded(!isExpanded);
   };
 
-  if (mealLoading || coctailLoading)
+  if (mealLoading)
     return (
       <Box
         display="flex"
@@ -53,7 +47,7 @@ const MealDetail = () => {
       </Box>
     );
 
-  if (mealError || coctailError)
+  if (mealError)
     return (
       <Box
         display="flex"
@@ -69,7 +63,7 @@ const MealDetail = () => {
     );
 
   return (
-    <Box padding="20px" maxWidth="600px" margin="auto" height="100vh">
+    <Box padding="20px" maxWidth="600px" margin="auto" minHeight="100vh">
       {detailMeal ? (
         <Box borderWidth="1px" borderRadius="lg" padding="20px" boxShadow="lg">
           <Heading as="h1" size="xl" textAlign="center" mb="20px">

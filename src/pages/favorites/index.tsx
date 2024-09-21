@@ -1,29 +1,25 @@
-import React, { Suspense, useEffect, useState } from "react";
+import {useEffect, useState } from "react";
 import { Box, Heading, Flex } from "@chakra-ui/react";
 import XCard from "../../shared/components/XCard";
 import { GoInbox } from "react-icons/go";
 import { useNavigate } from "react-router";
-const delay = async (ms: number) => {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(ms), ms);
-  });
-};
+import XSpinner from "../../shared/components/XSpinner";
+import { delay } from "../helpers";
+import { IFavoriteData } from "../../modules";
+
 const Favorites = () => {
   const navigate = useNavigate();
 
   const storedFavorites = localStorage.getItem("likes");
-  const favorites = storedFavorites ? JSON.parse(storedFavorites) : [];
+  const favorites: IFavoriteData[] = storedFavorites ? JSON.parse(storedFavorites) : [];
   
   const [loading, setLoading] = useState(false);
-  const [favoriteList, setFavoriteList] = useState(favorites);
+  const [favoriteList, setFavoriteList] = useState<IFavoriteData[]>(favorites);
 
 
   const handleLike = (id: string) => {
-    console.log({id});
-    console.log({favoriteList});
-    
     const filteredFavoriteList = favoriteList?.filter(
-      (favorite: any) => favorite?.id !== id
+      (favorite) => favorite?.id !== id
     );
     console.log({filteredFavoriteList});
     
@@ -38,16 +34,20 @@ const Favorites = () => {
     })();
   }, [favoriteList]);
 
-  const handleDetail = (id: string | undefined) => {
-    if (id) {
-      navigate(`/detail/${id}`);
+  const handleDetail = (id?: string, key?: 'meal' | 'drink') => {
+    if (id && key==='meal') {
+      navigate(`/meal-detail/${id}`);
+    }else {
+      navigate(`/coctail-detail/${id}`);
     }
   };
 
   return (
     <>
       {loading ? (
-        "Loading"
+          <Box style={{display: 'flex', alignItems: 'center', justifyContent:'center', height: '80vh'}}>
+          <XSpinner/>
+          </Box>
       ) : (
         <Box maxW="1200px" margin="auto">
           {favorites.length > 0 ? (
@@ -59,17 +59,17 @@ const Favorites = () => {
                 gap: "15px",
               }}
             >
-              {favoriteList.map((favorite: any, index: number) => (
+              {favoriteList.map((favorite, index: number) => (
                 <XCard
                   key={index}
                   data={favorite}
                   handleLike={handleLike}
-                  handleDetail={() => handleDetail(favorite?.idMeal)}
+                  handleDetail={() => handleDetail(favorite?.id, favorite.key)}
                 />
               ))}
             </Box>
           ) : (
-            <Flex align="center" justifyContent="center" flexDirection="column">
+            <Flex align="center" justifyContent="center" flexDirection="column" height={'70vh'}>
               <GoInbox fontSize="100px" />
               <Heading>No Favorites Added Yet</Heading>
             </Flex>

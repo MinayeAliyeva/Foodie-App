@@ -1,13 +1,11 @@
-import { Col } from "antd";
-import React, { FC, useEffect, useState } from "react";
-import { useGetCoctailsQuery } from "../../store";
-import { Cocktail, CocktailsResponse } from "../../store/apis/coctailApi";
+import { FC, useEffect, useState } from "react";
+import { Cocktail } from "../../store/apis/coctailApi";
 import { IDrink, IFavoriteData } from "../../modules";
 import XCard from "../../shared/components/XCard";
 import { useNavigate } from "react-router";
 
 interface IProps {
-  drinks?: Cocktail[] | undefined;
+  drinks?: Cocktail[];
 }
 const DrinkCard: FC<IProps> = ({ drinks }) => {
   const storedFavorites = localStorage.getItem("likes");
@@ -15,10 +13,7 @@ const DrinkCard: FC<IProps> = ({ drinks }) => {
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const navigate = useNavigate();
   
-  //   console.log("drinks", drinks);
-  const handleDetail = (id: string | undefined) => {
-    console.log("id",id);
-    
+  const handleDetail = (id?: string) => {
     if (id) {
       navigate(`/coctail-detail/${id}`);
     }
@@ -37,6 +32,7 @@ const DrinkCard: FC<IProps> = ({ drinks }) => {
       isLiked: !!JSON.parse(storedFavorites!)?.find(
         (favorie: any) => favorie?.id === drink?.idDrink
       ),
+      key: 'drink'
     })) as IFavoriteData[];
     setCardData(data);
   }, [drinks]);

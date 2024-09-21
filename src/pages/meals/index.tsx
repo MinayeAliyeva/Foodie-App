@@ -10,6 +10,7 @@ import {
 } from "../../store/apis/mealsApi";
 import MealCard from "./MealCard";
 import { filteredResponseData } from "../helpers";
+import ImgCardSkeloton from "../../shared/components/skeleton/ImgCardSkeloton";
 
 export const Meals = () => {
   const topics = ["First topic", "Second topic", "Third topic"];
@@ -30,9 +31,9 @@ export const Meals = () => {
     ingredient: [],
   });
 
-  const [getMeals, { data }] = useLazyGetMealsQuery();
-  const [getmealsIngredient, { data: ingredientData }] =
-    useLazyGetMealsByIngredientsQuery<any>();
+  const [getMeals, { data, isFetching: isFetchingMeals }] =
+    useLazyGetMealsQuery();
+  console.log("isFetchingMeals", isFetchingMeals);
 
   useEffect(() => {
     getMeals();
@@ -40,8 +41,16 @@ export const Meals = () => {
 
   const Menu = <TopicMenu topics={topics} selectedKey={selectedKey} />;
 
-  const [getAreaMeals] = useLazyGetMealsByAreaQuery();
-  const [getIngredientMeals] = useLazyGetMealsByIngredientsQuery();
+  const [getAreaMeals, { isFetching: isFetchingArea }] =
+    useLazyGetMealsByAreaQuery();
+  const [getIngredientMeals, { isFetching: isFetchingIngredient }] =
+    useLazyGetMealsByIngredientsQuery();
+  // console.log("isFetchingMeals",isFetchingMeals);
+  // console.log("isFetchingArea",isFetchingArea);
+
+  const isMealDataLoading =
+    isFetchingMeals || isFetchingArea || isFetchingIngredient;
+  // console.log("isMealDataLoading", isMealDataLoading);
 
   const getSearchData = ({
     value,
@@ -69,20 +78,6 @@ export const Meals = () => {
         setState((prev) => ({ ...prev, area: filteredArea }));
       }
     }
-    //  else if (key === "i") {
-    //   console.log("ING", { value, isChecked, key });
-    //   if (isChecked) {
-    //     setState((prev) => ({
-    //       ...prev,
-    //       ingredient: [...prev.ingredient, value],
-    //     }));
-    //   } else {
-    //     const filteredIngredient = state.ingredient.filter(
-    //       (ingredient) => ingredient !== value
-    //     );
-    //     setState((prev) => ({ ...prev, ingredient: filteredIngredient }));
-    //   }
-    // }
   };
   const getIngredientData = (values: string[]) => {
     setState((prev) => ({ ...prev, ingredient: values }));
@@ -160,7 +155,6 @@ export const Meals = () => {
     }
   }, [state, getAreaMeals, getMeals, getIngredientMeals]);
 
-
   const mealList = useMemo(() => {
     const categoryIds = mealsAll?.catagories.map((meal: any) => meal.idMeal); //catagorilerin idleri mapde
     const areaIds = mealsAll?.areas.map((meal: any) => meal.idMeal); //area idleri mapde
@@ -237,8 +231,10 @@ export const Meals = () => {
             }}
             gutter={[16, 16]}
           >
-            {mealList?.length ? (
-              <MealCard meals={mealList} />
+            {isMealDataLoading ? Array.from({ length: 10 }).map((_, index) => <ImgCardSkeloton />): mealList?.length ? (
+              <MealCard
+                meals={mealList}
+              />
             ) : (
               <Empty
                 description="No meals found"

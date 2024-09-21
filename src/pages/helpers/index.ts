@@ -17,3 +17,13 @@ export const filteredResponseData = <T = any>(
     data.find((meal: any) => meal.idMeal === id || meal.idDrink === id)
   );
 };
+
+export const delay = async (ms: number) => {
+  let timeOutId = null;
+  if(timeOutId){
+    clearTimeout(timeOutId);
+  }
+  return new Promise((resolve) => {
+    timeOutId = setTimeout(() => resolve(ms), ms);
+  });
+};

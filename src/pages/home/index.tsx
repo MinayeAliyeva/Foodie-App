@@ -23,16 +23,25 @@ import { useGetCoctailsQuery, useGetMealsQuery } from "../../store";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useLazyGetRandomMealQueryQuery } from "../../store/apis/mealsApi";
 import { Typography } from "antd";
-
-const MealCard = lazy(() => import("./MealCard"));
-const DrinkCard = lazy(() => import("./DrinkCard"));
+import { IFavoriteData } from "../../modules";
+import HomeCard from "./HomeCard";
+import {
+  Cocktail,
+  CocktailsResponse,
+  useLazyGetCoctailDetailQuery,
+} from "../../store/apis/coctailApi";
 
 const Home = () => {
+  const storedFavorites = localStorage.getItem("likes");
+  const [mainData, setMainData] = useState<IFavoriteData[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
   const [randomData, setRandomData] = useState<any>(null);
   const debouncedSearchValue = useDebounce(searchValue, 1000);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [searching, setSearching] = useState(false);
+  const [drinksDataForCatagories, setDrinksDataForCatagories] = useState<
+    Cocktail[]
+  >([]);
   // const [memoryList, setMemoryList] = useState<{ meals: any[], drinks: any[] }>({ meals: [], drinks: [] });
 
   const {
@@ -50,6 +59,92 @@ const Home = () => {
   } = useGetCoctailsQuery(debouncedSearchValue, {
     skip: !!searchValue.length && searchValue.length <= 2,
   });
+
+  const [
+    getCoctailById,
+    { data: coctailByData, isFetching: isFetchingCoctailDetaiById },
+  ] = useLazyGetCoctailDetailQuery();
+
+  useEffect(() => {
+    setDrinksDataForCatagories(drinksData?.drinks!);
+  }, [drinksData]);
+  useEffect(() => {
+    const idDrink =drinksDataForCatagories?.find((catagorieData)=>catagorieData?.strDrink.includes(debouncedSearchValue))?.idDrink;
+    if(idDrink){
+      getCoctailById(idDrink, true);
+    }
+  }, [debouncedSearchValue]);
+
+  useEffect(()=>{
+    if(coctailByData){
+      console.log({coctailByData});
+      const drinkDataList =
+      (coctailByData?.drinks?.map((drink: any) => ({
+        itemTitle: drink?.strDrink,
+        itemThumb: drink?.strDrinkThumb,
+        itemCategory: drink?.strCategory,
+        itemIngredients: [
+          drink?.strIngredient1,
+          drink?.strIngredient2,
+          drink?.strIngredient3,
+        ].filter(Boolean),
+        id: drink?.idDrink,
+        isLiked: !!JSON.parse(storedFavorites!)?.find(
+          (favorie: any) => favorie?.id === drink?.idDrink
+        ),
+        key: "drink",
+      })) as any) ?? [];
+      
+      setMainData(drinkDataList);
+    }
+  },[coctailByData])
+
+  console.log("mealsData", mealsData);
+  console.log("drinksData", drinksData);
+  console.log("debouncedSearchValue", debouncedSearchValue);
+
+  // change structure
+  useEffect(() => {
+    // if ( drinksData?.drinks?.length ||  mealsData?.meals.length) {
+    const mealDataList =
+      (mealsData?.meals?.map((meal) => ({
+        itemTitle: meal?.strMeal,
+        itemThumb: meal?.strMealThumb,
+        itemCategory: meal?.strCategory,
+        itemIngredients: [
+          meal?.strIngredient1,
+          meal?.strIngredient2,
+          meal?.strIngredient3,
+        ].filter(Boolean),
+        id: meal?.idMeal,
+        isLiked: !!JSON.parse(storedFavorites!)?.find(
+          (favorie: any) => favorie?.id === meal?.idMeal
+        ),
+        key: "meal",
+      })) as any) ?? [];
+    const drinkDataList =
+      (drinksData?.drinks?.map((drink) => ({
+        itemTitle: drink?.strDrink,
+        itemThumb: drink?.strDrinkThumb,
+        itemCategory: drink?.strCategory,
+        itemIngredients: [
+          drink?.strIngredient1,
+          drink?.strIngredient2,
+          drink?.strIngredient3,
+        ].filter(Boolean),
+        id: drink?.idDrink,
+        isLiked: !!JSON.parse(storedFavorites!)?.find(
+          (favorie: any) => favorie?.id === drink?.idDrink
+        ),
+        key: "drink",
+      })) as any) ?? [];
+    console.log("mealDataList", mealDataList);
+
+    setMainData([...mealDataList, ...drinkDataList]);
+    // }
+  }, [drinksData?.drinks, mealsData?.meals]);
+
+  console.log("mainData", mainData);
 
   const [trigger, { data }] = useLazyGetRandomMealQueryQuery<any>();
   useEffect(() => {
@@ -117,71 +212,18 @@ const Home = () => {
       )}
       <VStack spacing={8} align="start">
         <Stack spacing={4} w="full">
-          <Heading as="h3" size="lg" color="teal.500">
-            Yemekler
-          </Heading>
           <Divider borderColor="teal.300" />
           <Flex wrap="wrap" gap={4}>
-            {mealsLoading ? (
-              Array.from({ length: 4 }).map((_, index) => (
-                <Skeleton key={index} height="200px" width="100%" />
-              ))
-            ) : mealsError ? (
-              <Text color="red.500">Error loading meals</Text>
-            ) : mealsData?.meals?.length ? (
-              <Suspense
-                fallback={
-                  <Stack spacing={4}>
-                    {Array.from({ length: 4 }).map((_, index) => (
-                      <Skeleton key={index} height="200px" width="100%" />
-                    ))}
-                  </Stack>
-                }
-              >
-                {mealsData.meals.map((meal) => (
-                  <MealCard key={meal.idMeal} meal={meal} />
-                ))}
-              </Suspense>
-            ) : (
-              <Text color="gray.500">No meals found</Text>
-            )}
-          </Flex>
-        </Stack>
-
-        <Stack spacing={4} w="full">
-          <Heading as="h3" size="lg" color="teal.500">
-            İçecekler
-          </Heading>
-          <Divider borderColor="teal.300" />
-          <Flex wrap="wrap" gap={4}>
-            {drinksLoading ? (
-              Array.from({ length: 25 }).map((_, index) => (
-                <Skeleton key={index} height="200px" width="100%" />
-              ))
-            ) : drinksError ? (
-              <Text color="red.500">Error loading drinks</Text>
-            ) : drinksData?.drinks?.length ? (
-              <Suspense
-                fallback={
-                  <Stack spacing={4}>
-                    {Array.from({ length: 25 }).map((_, index) => (
-                      <Skeleton key={index} height="200px" width="100%" />
-                    ))}
-                  </Stack>
-                }
-              >
-                {drinksData.drinks.map((drink) => (
-                  <DrinkCard key={drink.idDrink} drink={drink} />
-                ))}
-              </Suspense>
-            ) : (
-              <Text color="gray.500">No drinks found</Text>
-            )}
+           
+                <HomeCard dataList={mainData} />
+               
+            
+            {/* <Text color="gray.500">No meals found</Text> */}
           </Flex>
         </Stack>
       </VStack>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      {/* <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Random Data</ModalHeader>
@@ -203,7 +245,7 @@ const Home = () => {
             </Button>
           </ModalFooter>
         </ModalContent>
-      </Modal>
+      </Modal> */}
     </Box>
   );
 };
