@@ -20,6 +20,7 @@ const enum url {
   GLASES_URL = "list.php?g=list",
   INGREDIENTS_URL = "list.php?i=list",
   FILTER_URL = "filter.php?",
+  RANDOM_URL = "random.php",
 }
 const cocktailsApi = createApi({
   reducerPath: "cocktails",
@@ -83,6 +84,11 @@ const cocktailsApi = createApi({
         },
       }),
     }),
+    getRandomcocktail: builder.query<any | string, void>({
+      query: () => ({
+        url: url?.RANDOM_URL,
+      }),
+    }),
   }),
 });
 export const {
@@ -96,5 +102,6 @@ export const {
   useLazyGetCoctailByGlasesQuery,
   useGetCoctailIngredientsListQuery,
   useLazyGetCoctailByIngredientsQuery,
+  useLazyGetRandomcocktailQuery
 } = cocktailsApi;
 export default cocktailsApi;

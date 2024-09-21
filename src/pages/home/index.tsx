@@ -29,7 +29,9 @@ import {
   Cocktail,
   CocktailsResponse,
   useLazyGetCoctailDetailQuery,
+  useLazyGetRandomcocktailQuery,
 } from "../../store/apis/coctailApi";
+import RandomCard from "./RandomCard";
 
 const Home = () => {
   const storedFavorites = localStorage.getItem("likes");
@@ -42,7 +44,8 @@ const Home = () => {
   const [drinksDataForCatagories, setDrinksDataForCatagories] = useState<
     Cocktail[]
   >([]);
-  // const [memoryList, setMemoryList] = useState<{ meals: any[], drinks: any[] }>({ meals: [], drinks: [] });
+  const [randomMealAndCocktailData, setRandomMealAndCocktailData] =
+    useState<any>([]);
 
   const {
     data: mealsData,
@@ -64,22 +67,33 @@ const Home = () => {
     getCoctailById,
     { data: coctailByData, isFetching: isFetchingCoctailDetaiById },
   ] = useLazyGetCoctailDetailQuery();
+  const [getRandomMealData, { data: randomMealData }] =
+    useLazyGetRandomMealQueryQuery<any>();
+  const [getRandomCocktail, { data: randomCocktailData }] =
+    useLazyGetRandomcocktailQuery();
 
   useEffect(() => {
-    setDrinksDataForCatagories(drinksData?.drinks!);
-  }, [drinksData]);
-  useEffect(() => {
-    const idDrink =drinksDataForCatagories?.find((catagorieData)=>catagorieData?.strDrink.includes(debouncedSearchValue))?.idDrink;
-    if(idDrink){
-      getCoctailById(idDrink, true);
-    }
-  }, [debouncedSearchValue]);
+    if (!randomMealData?.meals && !randomCocktailData?.drinks) return;
 
-  useEffect(()=>{
-    if(coctailByData){
-      console.log({coctailByData});
-      const drinkDataList =
-      (coctailByData?.drinks?.map((drink: any) => ({
+    const randomMealDataList =
+      randomMealData?.meals?.map((meal: any) => ({
+        itemTitle: meal?.strMeal,
+        itemThumb: meal?.strMealThumb,
+        itemCategory: meal?.strCategory,
+        itemIngredients: [
+          meal?.strIngredient1,
+          meal?.strIngredient2,
+          meal?.strIngredient3,
+        ].filter(Boolean),
+        id: meal?.idMeal,
+        isLiked: !!JSON.parse(storedFavorites!)?.find(
+          (favorite: any) => favorite?.id === meal?.idMeal
+        ),
+        key: "meal",
+      })) ?? [];
+
+    const randomCocktailDataList =
+      randomCocktailData?.drinks?.map((drink: any) => ({
         itemTitle: drink?.strDrink,
         itemThumb: drink?.strDrinkThumb,
         itemCategory: drink?.strCategory,
@@ -90,22 +104,59 @@ const Home = () => {
         ].filter(Boolean),
         id: drink?.idDrink,
         isLiked: !!JSON.parse(storedFavorites!)?.find(
-          (favorie: any) => favorie?.id === drink?.idDrink
+          (favorite: any) => favorite?.id === drink?.idDrink
         ),
         key: "drink",
-      })) as any) ?? [];
-      
+      })) ?? [];
+
+    setRandomMealAndCocktailData((prevState: any) => {
+      const combinedData = [...randomMealDataList, ...randomCocktailDataList];
+
+      const uniqueData = combinedData.filter(
+        (newItem) =>
+          !prevState.some((prevItem: any) => prevItem.id === newItem.id)
+      );
+      onOpen();
+      return [...prevState, ...uniqueData];
+    });
+  }, [randomMealData?.meals, randomCocktailData?.drinks, storedFavorites]);
+
+  useEffect(() => {
+    setDrinksDataForCatagories(drinksData?.drinks!);
+  }, [drinksData]);
+  useEffect(() => {
+    const idDrink = drinksDataForCatagories?.find((catagorieData) =>
+      catagorieData?.strDrink.includes(debouncedSearchValue)
+    )?.idDrink;
+    if (idDrink) {
+      getCoctailById(idDrink, true);
+    }
+  }, [debouncedSearchValue]);
+
+  useEffect(() => {
+    if (coctailByData) {
+      const drinkDataList =
+        (coctailByData?.drinks?.map((drink: any) => ({
+          itemTitle: drink?.strDrink,
+          itemThumb: drink?.strDrinkThumb,
+          itemCategory: drink?.strCategory,
+          itemIngredients: [
+            drink?.strIngredient1,
+            drink?.strIngredient2,
+            drink?.strIngredient3,
+          ].filter(Boolean),
+          id: drink?.idDrink,
+          isLiked: !!JSON.parse(storedFavorites!)?.find(
+            (favorie: any) => favorie?.id === drink?.idDrink
+          ),
+          key: "drink",
+        })) as any) ?? [];
+
       setMainData(drinkDataList);
     }
-  },[coctailByData])
+  }, [coctailByData]);
 
-  console.log("mealsData", mealsData);
-  console.log("drinksData", drinksData);
-  console.log("debouncedSearchValue", debouncedSearchValue);
-
-  // change structure
   useEffect(() => {
-    // if ( drinksData?.drinks?.length ||  mealsData?.meals.length) {
     const mealDataList =
       (mealsData?.meals?.map((meal) => ({
         itemTitle: meal?.strMeal,
@@ -122,6 +173,7 @@ const Home = () => {
         ),
         key: "meal",
       })) as any) ?? [];
+
     const drinkDataList =
       (drinksData?.drinks?.map((drink) => ({
         itemTitle: drink?.strDrink,
@@ -138,40 +190,9 @@ const Home = () => {
         ),
         key: "drink",
       })) as any) ?? [];
-    console.log("mealDataList", mealDataList);
 
     setMainData([...mealDataList, ...drinkDataList]);
-    // }
   }, [drinksData?.drinks, mealsData?.meals]);
-
-  console.log("mainData", mainData);
-
-  const [trigger, { data }] = useLazyGetRandomMealQueryQuery<any>();
-  useEffect(() => {
-    if (data) {
-      setRandomData(data);
-      onOpen();
-    }
-    if (searching) {
-      setSearching(false);
-    }
-  }, [data, onOpen, searching]);
-
-  // useEffect(() => {
-  //   if (mealsData?.meals?.length!! > 0) {
-  //     setMemoryList(prev => ({
-  //       ...prev,
-  //       meals: [...prev.meals, ...mealsData?.meals!!],
-  //     }));
-  //   }
-
-  //   if (drinksData?.drinks?.length!! > 0) {
-  //     setMemoryList(prev => ({
-  //       ...prev,
-  //       drinks: [...prev.drinks, ...drinksData?.drinks!!],
-  //     }));
-  //   }
-  // }, [mealsData, drinksData]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearching(true);
@@ -197,10 +218,10 @@ const Home = () => {
           width="80%"
         />
 
-        <Button onClick={() => trigger()} ml={4} colorScheme="teal">
+        <Button onClick={() => getRandomMealData()} ml={4} colorScheme="teal">
           Random Bir Yemek
         </Button>
-        <Button ml={4} colorScheme="teal">
+        <Button ml={4} colorScheme="teal" onClick={() => getRandomCocktail()}>
           Random Bir İçecek
         </Button>
       </Flex>
@@ -214,30 +235,21 @@ const Home = () => {
         <Stack spacing={4} w="full">
           <Divider borderColor="teal.300" />
           <Flex wrap="wrap" gap={4}>
-           
-                <HomeCard dataList={mainData} />
-               
-            
-            {/* <Text color="gray.500">No meals found</Text> */}
+            <HomeCard dataList={mainData} />
           </Flex>
         </Stack>
       </VStack>
 
-      {/* <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Random Data</ModalHeader>
+          <ModalHeader>Random GELEN YEMEK VE ICECEKLER</ModalHeader>
+          <Typography style={{ fontWeight: "bold", color: "red",marginLeft:'24px' }}>
+            RANDOM VERI SAYI:{randomMealAndCocktailData.length}
+          </Typography>
           <ModalCloseButton />
-          <ModalBody>
-            {randomData?.meals?.length ? (
-              <Suspense fallback={<Skeleton height="200px" width="100%" />}>
-                {randomData.meals.map((meal: any) => (
-                  <MealCard key={meal.idMeal} meal={meal} />
-                ))}
-              </Suspense>
-            ) : (
-              <Text>Loading...</Text>
-            )}
+          <ModalBody style={{display:'flex',gap:'10px',width:'100%',flexWrap:'wrap'}}>
+            <RandomCard randomMealAndCocktailData={randomMealAndCocktailData} />
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="teal" onClick={onClose}>
@@ -245,7 +257,7 @@ const Home = () => {
             </Button>
           </ModalFooter>
         </ModalContent>
-      </Modal> */}
+      </Modal>
     </Box>
   );
 };

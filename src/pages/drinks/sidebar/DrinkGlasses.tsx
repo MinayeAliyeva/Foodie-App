@@ -20,7 +20,6 @@ const DrinkGlasses = ({ getGlassesData }: any) => {
   const [value, setValue] = useState("");
   const { data: glasesData } = useGetCoctailGlasesListQuery();
 
-  // Başlangıçta yalnızca 5 bardak gösterecek şekilde güncellendi
   const geGlasses = (glasses?: any, size: number = 5) => {
     if (!glasses) return;
     const data = glasses.slice(0, size);
@@ -29,7 +28,6 @@ const DrinkGlasses = ({ getGlassesData }: any) => {
 
   useEffect(() => {
     if (glasesData?.drinks) {
-      // Başlangıçta 5 bardak göster
       geGlasses(glasesData.drinks, 5);
     }
   }, [glasesData]);
