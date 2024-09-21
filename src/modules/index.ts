@@ -68,5 +68,6 @@ export interface IFavoriteData{
   itemIngredients: string[];
   id: string;
   isLiked: boolean;
+  key?: 'meal' | 'drink'
 }
 

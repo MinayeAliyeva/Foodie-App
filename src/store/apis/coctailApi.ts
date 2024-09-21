@@ -28,8 +28,11 @@ const cocktailsApi = createApi({
   }),
   endpoints: (builder) => ({
     getCoctails: builder.query<CocktailsResponse, string | void>({
-      query: () => ({
+      query: (catagory) => ({
         url: url?.SEARCH_BY_URL,
+        params: {
+          s: catagory,
+        },
       }),
       keepUnusedDataFor: 60,
     }),
@@ -46,7 +49,7 @@ const cocktailsApi = createApi({
         url: url?.CATAGORIE_URL,
       }),
     }),
-    getCoctailByCatagory: builder.query<any, void>({
+    getCoctailByCatagory: builder.query<any, string | void>({
       query: (catagory) => ({
         url: url?.FILTER_URL,
         params: {
@@ -88,6 +91,7 @@ export const {
   useLazyGetCoctailDetailQuery,
   useGetCoctailCatagorieListQuery,
   useLazyGetCoctailByCatagoryQuery,
+  useGetCoctailByCatagoryQuery,
   useGetCoctailGlasesListQuery,
   useLazyGetCoctailByGlasesQuery,
   useGetCoctailIngredientsListQuery,

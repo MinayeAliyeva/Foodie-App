@@ -54,7 +54,7 @@ interface XCardProps {
   itemIngredients?: string[];
   isLiked?: boolean;
   handleLike?: (idMeal: string) => void;
-  handleDetail?: (id?: string) => void;
+  handleDetail?: (id?: string, key?: "meal" | "drink") => void;
   data: IFavoriteData;
 }
 
@@ -67,20 +67,14 @@ const XCard = ({
   handleDetail,
   data,
 }: XCardProps) => {
-  const {
-    itemTitle,
-    itemThumb,
-    itemCategory,
-    itemIngredients,
-    isLiked,
-    id,
-  } = data;
+  const { itemTitle, itemThumb, itemCategory, itemIngredients, isLiked, id } =
+    data;
 
   const onHandleLikeClick = () => {
     handleLike?.(id);
   };
-  const onHandleDetail = () => handleDetail?.(data?.id);
-   
+  const onHandleDetail = () => handleDetail?.(data?.id, data?.key);
+
   return (
     <Card
       m="10px 10px"
