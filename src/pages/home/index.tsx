@@ -24,14 +24,14 @@ import { useDebounce } from "../../hooks/useDebounce";
 import { useLazyGetRandomMealQueryQuery } from "../../store/apis/mealsApi";
 import { Typography } from "antd";
 import { IFavoriteData } from "../../modules";
-import HomeCard from "./HomeCard";
 import {
   Cocktail,
-  CocktailsResponse,
   useLazyGetCoctailDetailQuery,
+  useLazyGetCoctailsQuery,
   useLazyGetRandomcocktailQuery,
 } from "../../store/apis/coctailApi";
 import RandomCard from "./RandomCard";
+import CustomCard from "../../shared/components/CustomCard";
 
 const Home = () => {
   const storedFavorites = localStorage.getItem("likes");
@@ -46,13 +46,13 @@ const Home = () => {
   >([]);
   const [randomMealAndCocktailData, setRandomMealAndCocktailData] =
     useState<any>([]);
-
+  // const [getSearchCocktail, { data: cocktailData }] = useLazyGetCoctailsQuery();
   const {
     data: mealsData,
     error: mealsError,
     isLoading: mealsLoading,
   } = useGetMealsQuery(debouncedSearchValue, {
-    skip: !!searchValue.length && searchValue.length <= 2,
+    skip: !!debouncedSearchValue.length && debouncedSearchValue.length <= 2,
   });
 
   const {
@@ -60,13 +60,14 @@ const Home = () => {
     error: drinksError,
     isLoading: drinksLoading,
   } = useGetCoctailsQuery(debouncedSearchValue, {
-    skip: !!searchValue.length && searchValue.length <= 2,
+    skip: !!debouncedSearchValue.length && debouncedSearchValue.length <= 2,
   });
 
-  const [
-    getCoctailById,
-    { data: coctailByData, isFetching: isFetchingCoctailDetaiById },
-  ] = useLazyGetCoctailDetailQuery();
+
+  // const [
+  //   getCoctailById,
+  //   { data: coctailByData, isFetching: isFetchingCoctailDetaiById },
+  // ] = useLazyGetCoctailDetailQuery();
   const [getRandomMealData, { data: randomMealData }] =
     useLazyGetRandomMealQueryQuery<any>();
   const [getRandomCocktail, { data: randomCocktailData }] =
@@ -124,37 +125,37 @@ const Home = () => {
   useEffect(() => {
     setDrinksDataForCatagories(drinksData?.drinks!);
   }, [drinksData]);
-  useEffect(() => {
-    const idDrink = drinksDataForCatagories?.find((catagorieData) =>
-      catagorieData?.strDrink.includes(debouncedSearchValue)
-    )?.idDrink;
-    if (idDrink) {
-      getCoctailById(idDrink, true);
-    }
-  }, [debouncedSearchValue]);
+  // useEffect(() => {
+  //   const idDrink = drinksDataForCatagories?.find((catagorieData) =>
+  //     catagorieData?.strDrink.includes(debouncedSearchValue)
+  //   )?.idDrink;
+  //   if (idDrink) {
+  //     getCoctailById(idDrink, true);
+  //   }
+  // }, [debouncedSearchValue]);
 
-  useEffect(() => {
-    if (coctailByData) {
-      const drinkDataList =
-        (coctailByData?.drinks?.map((drink: any) => ({
-          itemTitle: drink?.strDrink,
-          itemThumb: drink?.strDrinkThumb,
-          itemCategory: drink?.strCategory,
-          itemIngredients: [
-            drink?.strIngredient1,
-            drink?.strIngredient2,
-            drink?.strIngredient3,
-          ].filter(Boolean),
-          id: drink?.idDrink,
-          isLiked: !!JSON.parse(storedFavorites!)?.find(
-            (favorie: any) => favorie?.id === drink?.idDrink
-          ),
-          key: "drink",
-        })) as any) ?? [];
+  // useEffect(() => {
+  //   if (coctailByData) {
+  //     const drinkDataList =
+  //       (coctailByData?.drinks?.map((drink: any) => ({
+  //         itemTitle: drink?.strDrink,
+  //         itemThumb: drink?.strDrinkThumb,
+  //         itemCategory: drink?.strCategory,
+  //         itemIngredients: [
+  //           drink?.strIngredient1,
+  //           drink?.strIngredient2,
+  //           drink?.strIngredient3,
+  //         ].filter(Boolean),
+  //         id: drink?.idDrink,
+  //         isLiked: !!JSON.parse(storedFavorites!)?.find(
+  //           (favorie: any) => favorie?.id === drink?.idDrink
+  //         ),
+  //         key: "drink",
+  //       })) as any) ?? [];
 
-      setMainData(drinkDataList);
-    }
-  }, [coctailByData]);
+  //     setMainData(drinkDataList);
+  //   }
+  // }, [coctailByData]);
 
   useEffect(() => {
     const mealDataList =
@@ -235,7 +236,7 @@ const Home = () => {
         <Stack spacing={4} w="full">
           <Divider borderColor="teal.300" />
           <Flex wrap="wrap" gap={4}>
-            <HomeCard dataList={mainData} />
+            <CustomCard dataList={mainData} />
           </Flex>
         </Stack>
       </VStack>
@@ -244,11 +245,20 @@ const Home = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Random GELEN YEMEK VE ICECEKLER</ModalHeader>
-          <Typography style={{ fontWeight: "bold", color: "red",marginLeft:'24px' }}>
+          <Typography
+            style={{ fontWeight: "bold", color: "red", marginLeft: "24px" }}
+          >
             RANDOM VERI SAYI:{randomMealAndCocktailData.length}
           </Typography>
           <ModalCloseButton />
-          <ModalBody style={{display:'flex',gap:'10px',width:'100%',flexWrap:'wrap'}}>
+          <ModalBody
+            style={{
+              display: "flex",
+              gap: "10px",
+              width: "100%",
+              flexWrap: "wrap",
+            }}
+          >
             <RandomCard randomMealAndCocktailData={randomMealAndCocktailData} />
           </ModalBody>
           <ModalFooter>

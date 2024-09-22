@@ -8,9 +8,10 @@ import {
   useLazyGetMealsByIngredientsQuery,
   useLazyGetMealsQuery,
 } from "../../store/apis/mealsApi";
-import MealCard from "./MealCard";
-import { filteredResponseData } from "../helpers";
+import { filteredResponseData, transformCardData } from "../helpers";
 import ImgCardSkeloton from "../../shared/components/skeleton/ImgCardSkeloton";
+import CustomCard from "../../shared/components/CustomCard";
+import { IFavoriteData } from "../../modules";
 
 export const Meals = () => {
   const topics = ["First topic", "Second topic", "Third topic"];
@@ -20,7 +21,7 @@ export const Meals = () => {
     areas: [],
     ingredients: [],
   });
-
+  const storedFavorites = localStorage.getItem("likes");
   const [state, setState] = useState<{
     category: string[];
     area: string[];
@@ -33,7 +34,6 @@ export const Meals = () => {
 
   const [getMeals, { data, isFetching: isFetchingMeals }] =
     useLazyGetMealsQuery();
-  console.log("isFetchingMeals", isFetchingMeals);
 
   useEffect(() => {
     getMeals();
@@ -45,12 +45,9 @@ export const Meals = () => {
     useLazyGetMealsByAreaQuery();
   const [getIngredientMeals, { isFetching: isFetchingIngredient }] =
     useLazyGetMealsByIngredientsQuery();
-  // console.log("isFetchingMeals",isFetchingMeals);
-  // console.log("isFetchingArea",isFetchingArea);
 
   const isMealDataLoading =
     isFetchingMeals || isFetchingArea || isFetchingIngredient;
-  // console.log("isMealDataLoading", isMealDataLoading);
 
   const getSearchData = ({
     value,
@@ -92,9 +89,14 @@ export const Meals = () => {
         const mealsCatagoryResponse = meals.flatMap(
           (mealObj) => mealObj?.data?.meals || []
         );
+        const cardData: IFavoriteData[] = transformCardData(
+          mealsCatagoryResponse,
+          "meal",
+          storedFavorites
+        );
         setMealsAll((prev: any) => ({
           ...prev,
-          catagories: mealsCatagoryResponse,
+          catagories: cardData,
         }));
       } catch (error) {
         console.log("error");
@@ -110,9 +112,14 @@ export const Meals = () => {
         const mealsAreaResponse = areas.flatMap(
           (mealObj) => mealObj?.data?.meals || []
         );
+        const cardData: IFavoriteData[] = transformCardData(
+          mealsAreaResponse,
+          "meal",
+          storedFavorites
+        );
         setMealsAll((prev: any) => ({
           ...prev,
-          areas: mealsAreaResponse,
+          areas: cardData,
         }));
       } catch (error) {
         console.log("error");
@@ -128,9 +135,14 @@ export const Meals = () => {
         const mealsIngredientResponse = ingredients.flatMap(
           (mealObj) => mealObj?.data?.meals || []
         );
+        const cardData: IFavoriteData[] = transformCardData(
+          mealsIngredientResponse,
+          "meal",
+          storedFavorites
+        );
         setMealsAll((prev: any) => ({
           ...prev,
-          ingredients: mealsIngredientResponse,
+          ingredients: cardData,
         }));
       } catch (error) {
         console.log("error");
@@ -156,9 +168,9 @@ export const Meals = () => {
   }, [state, getAreaMeals, getMeals, getIngredientMeals]);
 
   const mealList = useMemo(() => {
-    const categoryIds = mealsAll?.catagories.map((meal: any) => meal.idMeal); //catagorilerin idleri mapde
-    const areaIds = mealsAll?.areas.map((meal: any) => meal.idMeal); //area idleri mapde
-    const ingredientIds = mealsAll?.ingredients.map((meal: any) => meal.idMeal); //ingredient id mapde
+    const categoryIds = mealsAll?.catagories.map((meal: any) => meal.id);
+    const areaIds = mealsAll?.areas.map((meal: any) => meal.id);
+    const ingredientIds = mealsAll?.ingredients.map((meal: any) => meal.id);
     if (state.category.length && state.area.length && state.ingredient.length) {
       const combinedIds = [...categoryIds, ...areaIds, ...ingredientIds];
       return filteredResponseData(combinedIds, 3, mealsAll.catagories);
@@ -168,6 +180,13 @@ export const Meals = () => {
       !state.ingredient.length
     ) {
       const combinedIds = [...categoryIds, ...areaIds];
+      console.log("combinedIds", combinedIds);
+      console.log("CATAGORY", mealsAll.catagories);
+
+      console.log(
+        "fff",
+        filteredResponseData(combinedIds, 2, mealsAll.catagories)
+      );
       return filteredResponseData(combinedIds, 2, mealsAll.catagories);
     } else if (
       state.category.length &&
@@ -175,6 +194,7 @@ export const Meals = () => {
       state.ingredient.length
     ) {
       const combinedIds = [...categoryIds, ...ingredientIds];
+
       return filteredResponseData(combinedIds, 2, mealsAll.catagories);
     } else if (
       !state.category.length &&
@@ -203,7 +223,7 @@ export const Meals = () => {
       // a
       return mealsAll.ingredients;
     } else {
-      return data?.meals;
+      return transformCardData(data?.meals!, "meal", storedFavorites);
     }
   }, [mealsAll, data?.meals, state]);
 
@@ -231,10 +251,10 @@ export const Meals = () => {
             }}
             gutter={[16, 16]}
           >
-            {isMealDataLoading ? Array.from({ length: 10 }).map((_, index) => <ImgCardSkeloton />): mealList?.length ? (
-              <MealCard
-                meals={mealList}
-              />
+            {isMealDataLoading ? (
+              Array.from({ length: 10 }).map((_, index) => <ImgCardSkeloton />)
+            ) : mealList?.length ? (
+              <CustomCard dataList={mealList} />
             ) : (
               <Empty
                 description="No meals found"

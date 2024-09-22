@@ -89,6 +89,7 @@ const cocktailsApi = createApi({
         url: url?.RANDOM_URL,
       }),
     }),
+
   }),
 });
 export const {
@@ -102,6 +103,7 @@ export const {
   useLazyGetCoctailByGlasesQuery,
   useGetCoctailIngredientsListQuery,
   useLazyGetCoctailByIngredientsQuery,
-  useLazyGetRandomcocktailQuery
+  useLazyGetRandomcocktailQuery,
+
 } = cocktailsApi;
 export default cocktailsApi;

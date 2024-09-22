@@ -3,7 +3,6 @@ import { Layout, Row, Col } from "antd";
 import NavBar from "./navbar/NavBar";
 import TopicMenu from "./TopicMenu";
 import { XSideBar } from "./sidebar/XSideBar";
-import XCard from "../../shared/components/XCard";
 import {
   CocktailsResponse,
   useLazyGetCoctailByCatagoryQuery,
@@ -12,17 +11,22 @@ import {
   useLazyGetCoctailByGlasesQuery,
   useLazyGetCoctailByIngredientsQuery,
 } from "../../store/apis/coctailApi";
-import DrinkCard from "./DrinkCard";
-import { filteredResponseData } from "../helpers";
+import {
+  fetchData,
+  filteredResponseData,
+  transformCardData,
+  uniqueIds,
+} from "../helpers";
+import CustomCard from "../../shared/components/CustomCard";
 
 export const Drinks = () => {
   const topics = ["First topic", "Second topic", "Third topic"];
   const [getCoctails, { data: mainData }] = useLazyGetCoctailsQuery();
-  const [getCoctailByGlasses, { data: glassesData }] =
-    useLazyGetCoctailByGlasesQuery();
+  const [getCoctailByGlasses] = useLazyGetCoctailByGlasesQuery();
   const [getCoctailByCatagory] = useLazyGetCoctailByCatagoryQuery<any>();
   const [getIngredientCoctails] = useLazyGetCoctailByIngredientsQuery();
-  const [coctailAll, setMealsAll] = useState<any>({
+  const storedFavorites = localStorage.getItem("likes");
+  const [coctailAll, setCocktailsAll] = useState<any>({
     catagories: [],
     glasses: [],
     ingredients: [],
@@ -108,67 +112,51 @@ export const Drinks = () => {
     setState((prev) => ({ ...prev, ingredient: values }));
   };
   useEffect(() => {
-    const fetchCatagoryData = async () => {
-      try {
-        const coctailCatagoryPromises = state.category.map((catagory: any) => {
-          return getCoctailByCatagory(catagory, true);
-        });
+    (
+      fetchData({
+        data: state?.category,
+        trigger: getCoctailByCatagory,
+        key: "drinks",
+      }) as Promise<any>
+    ).then((res: any) => {
+      const transformedData = transformCardData(res, "drink", storedFavorites);
+      setCocktailsAll((prev: any) => ({
+        ...prev,
+        catagories: transformedData,
+      }));
+    });
 
-        const coctails = await Promise.all(coctailCatagoryPromises);
+    (
+      fetchData({
+        data: state?.glasses,
+        trigger: getCoctailByGlasses,
+        key: "drinks",
+      }) as Promise<any>
+    ).then((res: any) => {
+      const transformedData = transformCardData(res, "drink", storedFavorites);
+      setCocktailsAll((prev: any) => ({
+        ...prev,
+        glasses: transformedData,
+      }));
+    });
 
-        const drinksCatagoryResponse = coctails.flatMap(
-          (mealObj: any) => mealObj?.data?.drinks || []
-        );
-        setMealsAll((prev: any) => ({
-          ...prev,
-          catagories: drinksCatagoryResponse,
-        }));
-      } catch (error) {
-        console.log("error");
-      }
-    };
-    const fetchGlassesData = async () => {
-      try {
-        const coctailGlasssesPromises = state?.glasses.map((glass: any) => {
-          return getCoctailByGlasses(glass, true);
-        });
+    (
+      fetchData({
+        data: state?.ingredient,
+        trigger: getIngredientCoctails,
+        key: "drinks",
+      }) as Promise<any>
+    ).then((res: any) => {
+      const transformedData = transformCardData(res, "drink", storedFavorites);
+      setCocktailsAll((prev: any) => ({
+        ...prev,
+        ingredients: transformedData,
+      }));
+    });
 
-        const coctails = await Promise.all(coctailGlasssesPromises);
-
-        const drinksGlassesResponse = coctails.flatMap(
-          (mealObj: any) => mealObj?.data?.drinks || []
-        );
-        setMealsAll((prev: any) => ({
-          ...prev,
-          glasses: drinksGlassesResponse,
-        }));
-      } catch (error) {
-        console.log("error");
-      }
-    };
-    const fetchIngredientData = async () => {
-      try {
-        const ingredientPromises = state.ingredient.map((ingredient: any) =>
-          getIngredientCoctails(ingredient, true)
-        );
-        const ingredients = await Promise.all(ingredientPromises);
-        const coctailsIngredientResponse = ingredients.flatMap(
-          (mealObj) => mealObj?.data?.drinks || []
-        );
-        setMealsAll((prev: any) => ({
-          ...prev,
-          ingredients: coctailsIngredientResponse,
-        }));
-      } catch (error) {
-        console.log("error");
-      }
-    };
-    fetchIngredientData();
-    fetchCatagoryData();
-    fetchGlassesData();
     if (!state.category?.length) {
       getCoctails();
-      setMealsAll({
+      setCocktailsAll({
         catagories: [],
       });
     }
@@ -182,45 +170,54 @@ export const Drinks = () => {
 
   const drinks = useMemo(() => {
     const categoryIds =
-      coctailAll?.catagories?.map((drink: any) => drink.idDrink) || [];
-    const glassesIds =
-      coctailAll?.glasses?.map((drink: any) => drink.idDrink) || [];
+      coctailAll?.catagories?.map((drink: any) => drink.id) || [];
+    const glassesIds = coctailAll?.glasses?.map((drink: any) => drink.id) || [];
     const ingredientIds =
-      coctailAll?.ingredients?.map((drink: any) => drink.idDrink) || [];
+      coctailAll?.ingredients?.map((drink: any) => drink.id) || [];
+    const uniqueIngredientsIds: string[] = uniqueIds(ingredientIds);
+    const uniqueCotogorieIds: string[] = uniqueIds(categoryIds);
+    const uniqueGlassesIds: string[] = uniqueIds(glassesIds);
     if (
       state.category.length &&
       state.glasses.length &&
       state.ingredient.length
     ) {
-      const combinedIds = [...categoryIds, ...glassesIds, ...ingredientIds];
+      const combinedIds = [
+        ...uniqueIngredientsIds,
+        ...uniqueCotogorieIds,
+        ...uniqueGlassesIds,
+      ];
       return filteredResponseData(combinedIds, 3, coctailAll.catagories);
     } else if (
       state.category.length &&
       state.glasses.length &&
       !state.ingredient.length
     ) {
-      const combinedIds = [...categoryIds, ...glassesIds];
+      const combinedIds = [...uniqueCotogorieIds, ...uniqueGlassesIds];
       return filteredResponseData(combinedIds, 2, coctailAll.catagories);
     } else if (
       state.category.length &&
       !state.glasses.length &&
       state.ingredient.length
     ) {
-      const combinedIds = [...categoryIds, ...ingredientIds];
+      const combinedIds: string[] = [
+        ...uniqueIngredientsIds,
+        ...uniqueCotogorieIds,
+      ];
       return filteredResponseData(combinedIds, 2, coctailAll.catagories);
     } else if (
       !state.category.length &&
       state.glasses.length &&
       state.ingredient.length
     ) {
-      const combinedIds = [...glassesIds, ...ingredientIds];
-      return filteredResponseData(combinedIds, 2, coctailAll.areas);
+      const combinedIds = [...uniqueGlassesIds, ...uniqueIngredientsIds];
+      return filteredResponseData(combinedIds, 2, coctailAll.glasses);
     } else if (
       !state.category.length &&
       state.glasses.length &&
       !state.ingredient.length
     ) {
-      return coctailAll.areas;
+      return coctailAll.glasses;
     } else if (
       state.category.length &&
       !state.glasses.length &&
@@ -232,10 +229,14 @@ export const Drinks = () => {
       !state.glasses.length &&
       state.ingredient.length
     ) {
-      // a
       return coctailAll.ingredients;
     }
-    return mainData?.drinks || [];
+    console.log(
+      "TEST",
+      transformCardData(mainData?.drinks!, "drink", storedFavorites)
+    );
+
+    return transformCardData(mainData?.drinks!, "drink", storedFavorites) || [];
   }, [coctailAll, mainData?.drinks, state]);
 
   return (
@@ -249,8 +250,14 @@ export const Drinks = () => {
           menu={Menu}
         />
         <Layout.Content className="content">
+          <Row
+            style={{ fontSize: "25px", color: "#C62828", fontWeight: "bold" }}
+          >
+            {" "}
+            VERI SAYI: {drinks?.length}
+          </Row>
           <Row gutter={[16, 16]}>
-            <DrinkCard drinks={drinks} />
+            <CustomCard dataList={drinks} />
           </Row>
         </Layout.Content>
       </Layout>
