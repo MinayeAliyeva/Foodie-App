@@ -8,7 +8,7 @@ import {
   useLazyGetMealsByIngredientsQuery,
   useLazyGetMealsQuery,
 } from "../../store/apis/mealsApi";
-import { filteredResponseData, transformCardData } from "../helpers";
+import { filteredResponseData, transformCardData, uniqueIds } from "../helpers";
 import ImgCardSkeloton from "../../shared/components/skeleton/ImgCardSkeloton";
 import CustomCard from "../../shared/components/CustomCard";
 import { IFavoriteData } from "../../modules";
@@ -171,29 +171,31 @@ export const Meals = () => {
     const categoryIds = mealsAll?.catagories.map((meal: any) => meal.id);
     const areaIds = mealsAll?.areas.map((meal: any) => meal.id);
     const ingredientIds = mealsAll?.ingredients.map((meal: any) => meal.id);
+    const uniqueCotogorieIds: string[] = uniqueIds(categoryIds);
+    const uniqueAreasIds: string[] = uniqueIds(areaIds);
+    const uniqueIngredientsIds: string[] = uniqueIds(ingredientIds);
+
     if (state.category.length && state.area.length && state.ingredient.length) {
-      const combinedIds = [...categoryIds, ...areaIds, ...ingredientIds];
+      const combinedIds = [
+        ...uniqueCotogorieIds,
+        ...uniqueAreasIds,
+        ...uniqueIngredientsIds,
+      ];
       return filteredResponseData(combinedIds, 3, mealsAll.catagories);
     } else if (
       state.category.length &&
       state.area.length &&
       !state.ingredient.length
     ) {
-      const combinedIds = [...categoryIds, ...areaIds];
-      console.log("combinedIds", combinedIds);
-      console.log("CATAGORY", mealsAll.catagories);
+      const combinedIds = [...uniqueCotogorieIds, ...uniqueAreasIds];
 
-      console.log(
-        "fff",
-        filteredResponseData(combinedIds, 2, mealsAll.catagories)
-      );
       return filteredResponseData(combinedIds, 2, mealsAll.catagories);
     } else if (
       state.category.length &&
       !state.area.length &&
       state.ingredient.length
     ) {
-      const combinedIds = [...categoryIds, ...ingredientIds];
+      const combinedIds = [...uniqueCotogorieIds, ...uniqueIngredientsIds];
 
       return filteredResponseData(combinedIds, 2, mealsAll.catagories);
     } else if (
@@ -201,7 +203,7 @@ export const Meals = () => {
       state.area.length &&
       state.ingredient.length
     ) {
-      const combinedIds = [...areaIds, ...ingredientIds];
+      const combinedIds = [...uniqueAreasIds, ...uniqueIngredientsIds];
       return filteredResponseData(combinedIds, 2, mealsAll.areas);
     } else if (
       !state.category.length &&

@@ -94,7 +94,6 @@ export const Drinks = () => {
         setState((prev) => ({ ...prev, glasses: filteredGlasses }));
       }
     } else if (key === "i") {
-      console.log("ING", { value, isChecked, key });
       if (isChecked) {
         setState((prev) => ({
           ...prev,
@@ -177,6 +176,15 @@ export const Drinks = () => {
     const uniqueIngredientsIds: string[] = uniqueIds(ingredientIds);
     const uniqueCotogorieIds: string[] = uniqueIds(categoryIds);
     const uniqueGlassesIds: string[] = uniqueIds(glassesIds);
+    console.log("uniqueCotogorieIds", uniqueCotogorieIds);
+    console.log("uniqueIngredientsIds", uniqueIngredientsIds);
+    const commonElements = uniqueCotogorieIds.filter(
+      (value) =>
+        uniqueIngredientsIds.includes(value) && uniqueGlassesIds.includes(value)
+    );
+
+    console.log("commonElementsDRINK", commonElements);
+
     if (
       state.category.length &&
       state.glasses.length &&

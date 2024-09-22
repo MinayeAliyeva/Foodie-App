@@ -15,8 +15,7 @@ export const filteredResponseData = <T = any>(
   const countedData = Object.keys(countMap).filter(
     (id) => countMap[id] === num
   );
-  console.log("countedData", countedData);
-  console.log("countMap", countMap);
+  console.log("countedDataDRINK", countedData);
   return countedData.map((id: any) => data.find((item: any) => item.id === id));
 };
 
