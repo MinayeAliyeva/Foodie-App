@@ -68,7 +68,8 @@ const XCard = ({
   data,
 }: XCardProps) => {
   const { itemTitle, itemThumb, itemCategory, itemIngredients, isLiked, id } =
-    data;
+    data ?? {};
+  console.log("data", data);
 
   const onHandleLikeClick = () => {
     handleLike?.(id);
