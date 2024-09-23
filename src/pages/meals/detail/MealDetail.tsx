@@ -12,13 +12,13 @@ import {
   Alert,
   AlertIcon,
 } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
 const MealDetail = () => {
   const [
     getMealDetail,
     { data: mealData, isLoading: mealLoading, error: mealError },
   ] = useLazyGetMealDetailQuery();
-
 
   const [isExpanded, setIsExpanded] = useState(false);
   const { id } = useParams<{ id: string }>();
@@ -103,6 +103,11 @@ const MealDetail = () => {
             <Box>
               <Text fontWeight="bold">Category:</Text>
               <Text>{detailMeal[0].strCategory}</Text>
+            </Box>
+            <Box>
+              <Link style={{ color: "red" }} to={detailMeal[0]?.strYoutube}>
+                Youtube Link{" "}
+              </Link>
             </Box>
           </VStack>
         </Box>

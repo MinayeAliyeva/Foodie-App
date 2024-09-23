@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { IRandomCocktailResponse } from "../../modules";
 export interface Cocktail {
   idDrink: string;
   strDrink: string;
@@ -7,7 +8,7 @@ export interface Cocktail {
   strGlass: string;
   strInstructions: string;
   strDrinkThumb: string;
-  [key: string]: any;
+  [key: string]: string;
 }
 export interface CocktailsResponse {
   drinks?: Cocktail[];
@@ -37,7 +38,7 @@ const cocktailsApi = createApi({
       }),
       keepUnusedDataFor: 60,
     }),
-    getCoctailDetail: builder.query<any, string | void>({
+    getCoctailDetail: builder.query<CocktailsResponse, string | void>({
       query: (detailId) => ({
         url: url?.DETAIL_URL,
         params: {
@@ -45,12 +46,12 @@ const cocktailsApi = createApi({
         },
       }),
     }),
-    getCoctailCatagorieList: builder.query<any, void>({
+    getCoctailCatagorieList: builder.query<CocktailsResponse, void>({
       query: () => ({
         url: url?.CATAGORIE_URL,
       }),
     }),
-    getCoctailByCatagory: builder.query<any, string | void>({
+    getCoctailByCatagory: builder.query<CocktailsResponse, string | void>({
       query: (catagory) => ({
         url: url?.FILTER_URL,
         params: {
@@ -58,12 +59,12 @@ const cocktailsApi = createApi({
         },
       }),
     }),
-    getCoctailGlasesList: builder.query<any, void>({
+    getCoctailGlasesList: builder.query<CocktailsResponse, void>({
       query: () => ({
         url: url?.GLASES_URL,
       }),
     }),
-    getCoctailByGlases: builder.query<any, void>({
+    getCoctailByGlases: builder.query<CocktailsResponse, void>({
       query: (glass) => ({
         url: url?.FILTER_URL,
         params: {
@@ -71,12 +72,12 @@ const cocktailsApi = createApi({
         },
       }),
     }),
-    getCoctailIngredientsList: builder.query<any, void>({
+    getCoctailIngredientsList: builder.query<CocktailsResponse, void>({
       query: () => ({
         url: url?.INGREDIENTS_URL,
       }),
     }),
-    getCoctailByIngredients: builder.query<any | string, void>({
+    getCoctailByIngredients: builder.query<CocktailsResponse, void>({
       query: (ingredient) => ({
         url: url?.FILTER_URL,
         params: {
@@ -84,12 +85,12 @@ const cocktailsApi = createApi({
         },
       }),
     }),
-    getRandomcocktail: builder.query<any | string, void>({
+    getRandomcocktail: builder.query<IRandomCocktailResponse, void>({
       query: () => ({
         url: url?.RANDOM_URL,
       }),
+      keepUnusedDataFor: 0,
     }),
-
   }),
 });
 export const {

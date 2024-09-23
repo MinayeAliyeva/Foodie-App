@@ -1,12 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { Layout, Row, Col } from "antd";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Layout, Row, Empty } from "antd";
 import NavBar from "./navbar/NavBar";
 import TopicMenu from "./TopicMenu";
 import { XSideBar } from "./sidebar/XSideBar";
 import {
-  CocktailsResponse,
   useLazyGetCoctailByCatagoryQuery,
-  useGetCoctailsQuery,
   useLazyGetCoctailsQuery,
   useLazyGetCoctailByGlasesQuery,
   useLazyGetCoctailByIngredientsQuery,
@@ -18,13 +16,22 @@ import {
   uniqueIds,
 } from "../helpers";
 import CustomCard from "../../shared/components/CustomCard";
+import ImgCardSkeloton from "../../shared/components/skeleton/ImgCardSkeloton";
+import { IMeal } from "../../modules";
 
 export const Drinks = () => {
-  const topics = ["First topic", "Second topic", "Third topic"];
-  const [getCoctails, { data: mainData }] = useLazyGetCoctailsQuery();
-  const [getCoctailByGlasses] = useLazyGetCoctailByGlasesQuery();
-  const [getCoctailByCatagory] = useLazyGetCoctailByCatagoryQuery<any>();
-  const [getIngredientCoctails] = useLazyGetCoctailByIngredientsQuery();
+  const [getCoctails, { data: mainData, isFetching: isFetchingCocktails }] =
+    useLazyGetCoctailsQuery();
+  const [getCoctailByGlasses, { isFetching: isFetchingGlasses }] =
+    useLazyGetCoctailByGlasesQuery();
+  const [getCoctailByCatagory] = useLazyGetCoctailByCatagoryQuery<{
+    meals: Array<IMeal>;
+  }>();
+  const [getIngredientCoctails, { isFetching: isFetchingIngredients }] =
+    useLazyGetCoctailByIngredientsQuery();
+
+  const isCocktailDataLoading =
+    isFetchingCocktails || isFetchingGlasses || isFetchingIngredients;
   const storedFavorites = localStorage.getItem("likes");
   const [coctailAll, setCocktailsAll] = useState<any>({
     catagories: [],
@@ -32,25 +39,13 @@ export const Drinks = () => {
     ingredients: [],
   });
 
-  const [contentIndex, setContentIndex] = useState(0);
   const [selectedKey, setSelectedKey] = useState("0");
-  const {
-    data: coctailData,
-    error,
-    isLoading,
-  } = useGetCoctailsQuery<{
-    data?: CocktailsResponse;
-    error: string;
-    isLoading: boolean;
-  }>();
   const changeSelectedKey = (event: any) => {
     const key = event.key;
     setSelectedKey(key);
-    setContentIndex(+key);
   };
   const Menu = (
     <TopicMenu
-      topics={topics}
       selectedKey={selectedKey}
       changeSelectedKey={changeSelectedKey}
     />
@@ -65,51 +60,58 @@ export const Drinks = () => {
     ingredient: [],
   });
 
-  const getSearchData = ({
-    value,
-    isChecked,
-    key,
-  }: {
-    value: string;
-    isChecked?: boolean;
-    key?: "s" | "g" | "i";
-  }) => {
-    if (key === "s") {
-      if (isChecked) {
-        setState((prev) => ({ ...prev, category: [...prev.category, value] }));
-      } else {
-        const filteredCatagory = state.category.filter(
-          (catagory) => catagory !== value
-        );
-        setState((prev) => ({ ...prev, category: filteredCatagory }));
+  const getSearchData = useCallback(
+    ({
+      value,
+      isChecked,
+      key,
+    }: {
+      value: string;
+      isChecked?: boolean;
+      key?: "s" | "g" | "i";
+    }) => {
+      if (key === "s") {
+        if (isChecked) {
+          setState((prev) => ({
+            ...prev,
+            category: [...prev.category, value],
+          }));
+        } else {
+          const filteredCatagory = state.category.filter(
+            (catagory) => catagory !== value
+          );
+          setState((prev) => ({ ...prev, category: filteredCatagory }));
+        }
       }
-    }
-    if (key === "g") {
-      if (isChecked) {
-        setState((prev) => ({ ...prev, glasses: [...prev.glasses, value] }));
-      } else {
-        const filteredGlasses = state.glasses.filter(
-          (glass) => glass !== value
-        );
-        setState((prev) => ({ ...prev, glasses: filteredGlasses }));
+      if (key === "g") {
+        if (isChecked) {
+          setState((prev) => ({ ...prev, glasses: [...prev.glasses, value] }));
+        } else {
+          const filteredGlasses = state.glasses.filter(
+            (glass) => glass !== value
+          );
+          setState((prev) => ({ ...prev, glasses: filteredGlasses }));
+        }
+      } else if (key === "i") {
+        if (isChecked) {
+          setState((prev) => ({
+            ...prev,
+            ingredient: [...prev.ingredient, value],
+          }));
+        } else {
+          const filteredIngredient = state.ingredient.filter(
+            (ingredient) => ingredient !== value
+          );
+          setState((prev) => ({ ...prev, ingredient: filteredIngredient }));
+        }
       }
-    } else if (key === "i") {
-      if (isChecked) {
-        setState((prev) => ({
-          ...prev,
-          ingredient: [...prev.ingredient, value],
-        }));
-      } else {
-        const filteredIngredient = state.ingredient.filter(
-          (ingredient) => ingredient !== value
-        );
-        setState((prev) => ({ ...prev, ingredient: filteredIngredient }));
-      }
-    }
-  };
+    },
+    [state.category, state.ingredient, state.glasses]
+  );
   const getIngredientData = (values: string[]) => {
     setState((prev) => ({ ...prev, ingredient: values }));
   };
+
   useEffect(() => {
     (
       fetchData({
@@ -153,10 +155,16 @@ export const Drinks = () => {
       }));
     });
 
-    if (!state.category?.length) {
+    if (
+      !state.category?.length &&
+      !state.glasses?.length &&
+      !state.ingredient?.length
+    ) {
       getCoctails();
       setCocktailsAll({
         catagories: [],
+        glasses: [],
+        ingredients: [],
       });
     }
   }, [
@@ -165,6 +173,7 @@ export const Drinks = () => {
     getCoctailByCatagory,
     getCoctailByGlasses,
     getIngredientCoctails,
+    storedFavorites,
   ]);
 
   const drinks = useMemo(() => {
@@ -176,14 +185,10 @@ export const Drinks = () => {
     const uniqueIngredientsIds: string[] = uniqueIds(ingredientIds);
     const uniqueCotogorieIds: string[] = uniqueIds(categoryIds);
     const uniqueGlassesIds: string[] = uniqueIds(glassesIds);
-    console.log("uniqueCotogorieIds", uniqueCotogorieIds);
-    console.log("uniqueIngredientsIds", uniqueIngredientsIds);
-    const commonElements = uniqueCotogorieIds.filter(
-      (value) =>
-        uniqueIngredientsIds.includes(value) && uniqueGlassesIds.includes(value)
+    const commonIds = uniqueCotogorieIds.filter((id) =>
+      uniqueGlassesIds.includes(id)
     );
-
-    console.log("commonElementsDRINK", commonElements);
+    console.log("commonIds", commonIds.length);
 
     if (
       state.category.length &&
@@ -239,13 +244,9 @@ export const Drinks = () => {
     ) {
       return coctailAll.ingredients;
     }
-    console.log(
-      "TEST",
-      transformCardData(mainData?.drinks!, "drink", storedFavorites)
-    );
 
     return transformCardData(mainData?.drinks!, "drink", storedFavorites) || [];
-  }, [coctailAll, mainData?.drinks, state]);
+  }, [coctailAll, mainData?.drinks, state, storedFavorites]);
 
   return (
     <>
@@ -264,8 +265,34 @@ export const Drinks = () => {
             {" "}
             VERI SAYI: {drinks?.length}
           </Row>
-          <Row gutter={[16, 16]}>
-            <CustomCard dataList={drinks} />
+          <Row
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            gutter={[16, 16]}
+          >
+            {isCocktailDataLoading ? (
+              Array.from({ length: 10 }).map((_, index) => (
+                <ImgCardSkeloton key={index} />
+              ))
+            ) : drinks?.length ? (
+              <CustomCard dataList={drinks} />
+            ) : (
+              <Empty
+                description="No Drinks found"
+                style={{
+                  fontSize: "24px",
+                  color: "#C62828",
+                  height: "300px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              />
+            )}
           </Row>
         </Layout.Content>
       </Layout>

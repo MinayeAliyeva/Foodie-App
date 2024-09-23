@@ -8,14 +8,12 @@ import {
   Checkbox,
   Input,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useGetMealsAreaQuery } from "../../../store/apis/mealsApi";
 import { minMealAreaLength } from "../data";
 
 export const MealArea = ({ getAreaData }: any) => {
-  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [areasState, setAreasState] = useState<any>([]);
-  const [value, setValue] = useState("");
   const { data: areaData } = useGetMealsAreaQuery();
 
   useEffect(() => {
@@ -26,28 +24,23 @@ export const MealArea = ({ getAreaData }: any) => {
   const handleChangeAreaCheckbox = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const selectedValue = event.target.value;
-    setSelectedAreas((prevSelected) =>
-      prevSelected.includes(selectedValue)
-        ? prevSelected.filter((item) => item !== selectedValue)
-        : [...prevSelected, selectedValue]
-    );
     getAreaData({
       value: event.target.value,
       isChecked: event.target.checked,
       key: "a",
     });
   };
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const searchValue = event.target.value.toLowerCase();
-    setValue(searchValue);
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const searchValue = event.target.value.toLowerCase();
+      const filteredAreas = areaData?.meals?.filter((area: any) =>
+        area?.strArea.toLowerCase().includes(searchValue)
+      );
 
-    const filteredAreas = areaData?.meals?.filter((area: any) =>
-      area?.strArea.toLowerCase().includes(searchValue)
-    );
-
-    setAreasState(filteredAreas || []);
-  };
+      setAreasState(filteredAreas || []);
+    },
+    [areaData?.meals]
+  );
   useEffect(() => {
     if (areaData?.meals) {
       getArea(areaData.meals);
@@ -55,7 +48,6 @@ export const MealArea = ({ getAreaData }: any) => {
   }, [areaData?.meals]);
   const getArea = (areas: any, size: number = 5) => {
     if (!areas) return;
-
     const data = areas?.slice(0, size);
     setAreasState(data);
   };

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { IDrink, IFavoriteData } from "../../modules";
 import { useNavigate } from "react-router";
 import XCard from "./XCard";
@@ -21,37 +21,36 @@ const CustomCard: FC<IProps> = ({ dataList }) => {
     }
   };
 
-  const handleLike = (idDrink: string) => {
-    const filteredCardData = cardData?.find((drink) => drink?.id === idDrink);
+  const handleLike = useCallback(
+    (idDrink: string) => {
+      const filteredCardData = cardData?.find((drink) => drink?.id === idDrink);
+      const mapedCardData = cardData.map((data) =>
+        data?.id === filteredCardData?.id
+          ? { ...data, isLiked: !data?.isLiked }
+          : data
+      );
+      setCardData(mapedCardData);
+      if (!filteredCardData) {
+        return;
+      }
+      const currentLikes = JSON.parse(localStorage.getItem("likes") || "[]");
+      const itemString = JSON.stringify({ ...filteredCardData, isLiked: true });
 
-    const mapedCardData = cardData.map((data) =>
-      data?.id === filteredCardData?.id
-        ? { ...data, isLiked: !data?.isLiked }
-        : data
-    );
+      const isItemLiked = currentLikes.some(
+        (item: IFavoriteData) => JSON.stringify(item) === itemString
+      );
+      const updatedLikes = isItemLiked
+        ? currentLikes.filter(
+            (item: IDrink) => JSON.stringify(item) !== itemString
+          )
+        : [...currentLikes, { ...filteredCardData, isLiked: true }];
 
-    setCardData(mapedCardData);
+      localStorage.setItem("likes", JSON.stringify(updatedLikes));
 
-    if (!filteredCardData) {
-      return;
-    }
-
-    const currentLikes = JSON.parse(localStorage.getItem("likes") || "[]");
-    const itemString = JSON.stringify({ ...filteredCardData, isLiked: true });
-
-    const isItemLiked = currentLikes.some(
-      (item: IFavoriteData) => JSON.stringify(item) === itemString
-    );
-    const updatedLikes = isItemLiked
-      ? currentLikes.filter(
-          (item: IDrink) => JSON.stringify(item) !== itemString
-        )
-      : [...currentLikes, { ...filteredCardData, isLiked: true }];
-
-    localStorage.setItem("likes", JSON.stringify(updatedLikes));
-
-    setIsLiked(!isItemLiked);
-  };
+      setIsLiked(!isItemLiked);
+    },
+    [cardData]
+  );
   return (
     <>
       {cardData?.map((data: any) => (

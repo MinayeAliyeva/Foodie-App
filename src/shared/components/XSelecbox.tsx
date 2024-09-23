@@ -1,11 +1,8 @@
-import React, { FC } from "react";
-
-import { Select, TreeSelect } from "antd";
+import { FC } from "react";
+import { Select } from "antd";
 import { useGetIngredientsQuery } from "../../store/apis/mealsApi";
 import { IoSearchOutline } from "react-icons/io5";
 const { Option } = Select;
-const { TreeNode } = TreeSelect;
-
 interface IProps {
   getIngredientData: ({
     value,
@@ -23,7 +20,6 @@ const SelecBox: FC<IProps> = ({ getIngredientData }) => {
 
   return (
     <Select
-      // allowClear
       mode="multiple"
       style={{
         width: "95%",
@@ -32,12 +28,9 @@ const SelecBox: FC<IProps> = ({ getIngredientData }) => {
         fontSize: "18px",
         margin: "10px 0",
       }}
-      // defaultOpen={true}
       placeholder={"Ingradient Axtar"}
-      // showSearch={true}
       suffixIcon={<IoSearchOutline />}
-      onSelect={(e) => {
-      }}
+      onSelect={(e) => {}}
     >
       {ingredientData?.meals?.map((ingredient: any) => {
         return (

@@ -1,14 +1,12 @@
-import { useState, Suspense, lazy, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Input,
-  Text,
   Flex,
   VStack,
   Stack,
   Heading,
   Divider,
-  Skeleton,
   Button,
   Modal,
   ModalOverlay,
@@ -23,30 +21,32 @@ import { useGetCoctailsQuery, useGetMealsQuery } from "../../store";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useLazyGetRandomMealQueryQuery } from "../../store/apis/mealsApi";
 import { Typography } from "antd";
-import { IFavoriteData } from "../../modules";
+import { IFavoriteData, IMealCategories } from "../../modules";
 import {
   Cocktail,
-  useLazyGetCoctailDetailQuery,
-  useLazyGetCoctailsQuery,
   useLazyGetRandomcocktailQuery,
 } from "../../store/apis/coctailApi";
 import RandomCard from "./RandomCard";
 import CustomCard from "../../shared/components/CustomCard";
+import ImgCardSkeloton from "../../shared/components/skeleton/ImgCardSkeloton";
+import { transformCardData } from "../helpers";
 
 const Home = () => {
   const storedFavorites = localStorage.getItem("likes");
   const [mainData, setMainData] = useState<IFavoriteData[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
-  const [randomData, setRandomData] = useState<any>(null);
-  const debouncedSearchValue = useDebounce(searchValue, 1000);
+  const debouncedSearchValue = useDebounce(searchValue, 500);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [memoryList, setMemoryList] = useState<any>([]);
   const [searching, setSearching] = useState(false);
   const [drinksDataForCatagories, setDrinksDataForCatagories] = useState<
     Cocktail[]
   >([]);
-  const [randomMealAndCocktailData, setRandomMealAndCocktailData] =
-    useState<any>([]);
-  // const [getSearchCocktail, { data: cocktailData }] = useLazyGetCoctailsQuery();
+
+  const [randomMealAndCocktailData, setRandomMealAndCocktailData] = useState<
+    IFavoriteData[]
+  >([]);
+
   const {
     data: mealsData,
     error: mealsError,
@@ -62,60 +62,26 @@ const Home = () => {
   } = useGetCoctailsQuery(debouncedSearchValue, {
     skip: !!debouncedSearchValue.length && debouncedSearchValue.length <= 2,
   });
-
-
-  // const [
-  //   getCoctailById,
-  //   { data: coctailByData, isFetching: isFetchingCoctailDetaiById },
-  // ] = useLazyGetCoctailDetailQuery();
+  const homeLoading = mealsLoading || drinksLoading;
   const [getRandomMealData, { data: randomMealData }] =
-    useLazyGetRandomMealQueryQuery<any>();
+    useLazyGetRandomMealQueryQuery();
   const [getRandomCocktail, { data: randomCocktailData }] =
     useLazyGetRandomcocktailQuery();
 
   useEffect(() => {
     if (!randomMealData?.meals && !randomCocktailData?.drinks) return;
-
-    const randomMealDataList =
-      randomMealData?.meals?.map((meal: any) => ({
-        itemTitle: meal?.strMeal,
-        itemThumb: meal?.strMealThumb,
-        itemCategory: meal?.strCategory,
-        itemIngredients: [
-          meal?.strIngredient1,
-          meal?.strIngredient2,
-          meal?.strIngredient3,
-        ].filter(Boolean),
-        id: meal?.idMeal,
-        isLiked: !!JSON.parse(storedFavorites!)?.find(
-          (favorite: any) => favorite?.id === meal?.idMeal
-        ),
-        key: "meal",
-      })) ?? [];
-
-    const randomCocktailDataList =
-      randomCocktailData?.drinks?.map((drink: any) => ({
-        itemTitle: drink?.strDrink,
-        itemThumb: drink?.strDrinkThumb,
-        itemCategory: drink?.strCategory,
-        itemIngredients: [
-          drink?.strIngredient1,
-          drink?.strIngredient2,
-          drink?.strIngredient3,
-        ].filter(Boolean),
-        id: drink?.idDrink,
-        isLiked: !!JSON.parse(storedFavorites!)?.find(
-          (favorite: any) => favorite?.id === drink?.idDrink
-        ),
-        key: "drink",
-      })) ?? [];
-
-    setRandomMealAndCocktailData((prevState: any) => {
+    const randomMealDataList: IFavoriteData[] =
+      transformCardData(randomMealData?.meals, "meal", storedFavorites) || [];
+    const randomCocktailDataList: IFavoriteData[] =
+      transformCardData(randomCocktailData?.drinks, "drink", storedFavorites) ||
+      [];
+    setRandomMealAndCocktailData((prevState: IFavoriteData[]) => {
       const combinedData = [...randomMealDataList, ...randomCocktailDataList];
-
       const uniqueData = combinedData.filter(
         (newItem) =>
-          !prevState.some((prevItem: any) => prevItem.id === newItem.id)
+          !prevState.some(
+            (prevItem: IFavoriteData) => prevItem.id === newItem.id
+          )
       );
       onOpen();
       return [...prevState, ...uniqueData];
@@ -125,81 +91,32 @@ const Home = () => {
   useEffect(() => {
     setDrinksDataForCatagories(drinksData?.drinks!);
   }, [drinksData]);
-  // useEffect(() => {
-  //   const idDrink = drinksDataForCatagories?.find((catagorieData) =>
-  //     catagorieData?.strDrink.includes(debouncedSearchValue)
-  //   )?.idDrink;
-  //   if (idDrink) {
-  //     getCoctailById(idDrink, true);
-  //   }
-  // }, [debouncedSearchValue]);
-
-  // useEffect(() => {
-  //   if (coctailByData) {
-  //     const drinkDataList =
-  //       (coctailByData?.drinks?.map((drink: any) => ({
-  //         itemTitle: drink?.strDrink,
-  //         itemThumb: drink?.strDrinkThumb,
-  //         itemCategory: drink?.strCategory,
-  //         itemIngredients: [
-  //           drink?.strIngredient1,
-  //           drink?.strIngredient2,
-  //           drink?.strIngredient3,
-  //         ].filter(Boolean),
-  //         id: drink?.idDrink,
-  //         isLiked: !!JSON.parse(storedFavorites!)?.find(
-  //           (favorie: any) => favorie?.id === drink?.idDrink
-  //         ),
-  //         key: "drink",
-  //       })) as any) ?? [];
-
-  //     setMainData(drinkDataList);
-  //   }
-  // }, [coctailByData]);
 
   useEffect(() => {
-    const mealDataList =
-      (mealsData?.meals?.map((meal) => ({
-        itemTitle: meal?.strMeal,
-        itemThumb: meal?.strMealThumb,
-        itemCategory: meal?.strCategory,
-        itemIngredients: [
-          meal?.strIngredient1,
-          meal?.strIngredient2,
-          meal?.strIngredient3,
-        ].filter(Boolean),
-        id: meal?.idMeal,
-        isLiked: !!JSON.parse(storedFavorites!)?.find(
-          (favorie: any) => favorie?.id === meal?.idMeal
-        ),
-        key: "meal",
-      })) as any) ?? [];
-
-    const drinkDataList =
-      (drinksData?.drinks?.map((drink) => ({
-        itemTitle: drink?.strDrink,
-        itemThumb: drink?.strDrinkThumb,
-        itemCategory: drink?.strCategory,
-        itemIngredients: [
-          drink?.strIngredient1,
-          drink?.strIngredient2,
-          drink?.strIngredient3,
-        ].filter(Boolean),
-        id: drink?.idDrink,
-        isLiked: !!JSON.parse(storedFavorites!)?.find(
-          (favorie: any) => favorie?.id === drink?.idDrink
-        ),
-        key: "drink",
-      })) as any) ?? [];
-
-    setMainData([...mealDataList, ...drinkDataList]);
+    if (mealsData?.meals?.length || drinksData?.drinks?.length) {
+      const mealDataList =
+        transformCardData(mealsData?.meals, "meal", storedFavorites) || [];
+      const drinkDataList =
+        transformCardData(drinksData?.drinks, "drink", storedFavorites) || [];
+      setMainData([...mealDataList, ...drinkDataList]);
+    }else{
+      setMainData([]);
+    }
   }, [drinksData?.drinks, mealsData?.meals]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearching(true);
     setSearchValue(event.target.value);
+    setMemoryList(
+      (prevs: any) => debouncedSearchValue ?? [...prevs, searchValue]
+    );
   };
-
+  const onClickGetRandomMealData = () => {
+    getRandomMealData();
+  };
+  const onClickGetRandomCocktailData = () => {
+    getRandomCocktail();
+  };
   return (
     <Box p={4} maxW="1200px" mx="auto">
       <Heading as="h3" size="lg" color="teal.500" mb={4}>
@@ -219,10 +136,14 @@ const Home = () => {
           width="80%"
         />
 
-        <Button onClick={() => getRandomMealData()} ml={4} colorScheme="teal">
+        <Button onClick={onClickGetRandomMealData} ml={4} colorScheme="teal">
           Random Bir Yemek
         </Button>
-        <Button ml={4} colorScheme="teal" onClick={() => getRandomCocktail()}>
+        <Button
+          ml={4}
+          colorScheme="teal"
+          onClick={onClickGetRandomCocktailData}
+        >
           Random Bir İçecek
         </Button>
       </Flex>
@@ -236,7 +157,13 @@ const Home = () => {
         <Stack spacing={4} w="full">
           <Divider borderColor="teal.300" />
           <Flex wrap="wrap" gap={4}>
-            <CustomCard dataList={mainData} />
+            {homeLoading ? (
+              Array.from({ length: 10 }).map((_, index) => (
+                <ImgCardSkeloton key={index} />
+              ))
+            ) : (
+              <CustomCard dataList={mainData} />
+            )}
           </Flex>
         </Stack>
       </VStack>

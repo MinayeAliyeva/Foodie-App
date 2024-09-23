@@ -21,7 +21,6 @@ export interface Meal {
   strInstructions: string;
   strMealThumb: string;
   strTags: string;
-  strYoutube: string;
   [key: string]: string;
 }
 
@@ -49,25 +48,79 @@ export interface IMealIngredient {
   strDescription: string;
   strType: string | null;
 }
-export interface IMealsIngredients {
-  meals: any;
-}
-export interface IRandomMeal {
-  idMeal: string;
+interface IMealIngredients {
   strMeal: string;
-  strDrinkAlternate: string | null;
-  strCategory: string;
-  strArea: string;
+  strMealThumb: string;
+  idMeal: string;
+}
+export interface IMealsIngredients {
+  meals: Array<IMealIngredients>;
+}
+
+export interface IRandomMeal {
+  meals: {
+    idMeal: string;
+    strMeal: string;
+    strDrinkAlternate: string | null;
+    strCategory: string;
+    strArea: string;
+    strInstructions: string;
+    strMealThumb: string;
+  }[];
+}
+
+export interface IMealDatainterface {
+  idMeal?: string;
+  strMeal?: string;
+  strDrinkAlternate?: string | null;
+  strCategory?: string;
+  strArea?: string;
   strInstructions: string;
   strMealThumb: string;
+  strTags: string | null;
+  strYoutube: string;
+  strIngredient1: string;
+  strIngredient2: string;
+  strIngredient3: string;
+  strIngredient4: string;
+  strIngredient5: string;
+  strIngredient6: string;
+  strIngredient7: string;
+  strIngredient8: string;
+  strIngredient9: string;
+  strIngredient10: string;
 }
-export interface IFavoriteData{
+
+export interface IRandomCocktail {
+  idDrink: string;
+  strDrink: string;
+  strDrinkAlternate: string | null;
+  strTags: string | null;
+  strVideo: string | null;
+  strCategory: string;
+  strIBA: string | null;
+  strAlcoholic: string;
+  strGlass: string;
+  strInstructions: string;
+  strInstructionsES: string;
+  strInstructionsDE: string;
+  strInstructionsFR: string | null;
+  strInstructionsIT: string;
+}
+export interface IRandomCocktailResponse {
+  drinks: IRandomCocktail[];
+}
+export interface IFavoriteData {
   itemTitle: string;
   itemThumb: string;
   itemCategory: string;
   itemIngredients: string[];
   id: string;
-  isLiked: boolean;
-  key?: 'meal' | 'drink'
+  isLiked?: boolean;
+  key?: "meal" | "drink";
 }
-
+export interface IAllCocktail {
+  catagories: IFavoriteData[];
+  glasses: IFavoriteData[];
+  ingredients: IFavoriteData[];
+}

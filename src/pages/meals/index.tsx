@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Empty, Layout, Row } from "antd";
 import NavBar from "./navbar/NavBar";
 import TopicMenu from "./TopicMenu";
@@ -8,10 +8,14 @@ import {
   useLazyGetMealsByIngredientsQuery,
   useLazyGetMealsQuery,
 } from "../../store/apis/mealsApi";
-import { filteredResponseData, transformCardData, uniqueIds } from "../helpers";
+import {
+  fetchData,
+  filteredResponseData,
+  transformCardData,
+  uniqueIds,
+} from "../helpers";
 import ImgCardSkeloton from "../../shared/components/skeleton/ImgCardSkeloton";
 import CustomCard from "../../shared/components/CustomCard";
-import { IFavoriteData } from "../../modules";
 
 export const Meals = () => {
   const topics = ["First topic", "Second topic", "Third topic"];
@@ -49,109 +53,84 @@ export const Meals = () => {
   const isMealDataLoading =
     isFetchingMeals || isFetchingArea || isFetchingIngredient;
 
-  const getSearchData = ({
-    value,
-    isChecked,
-    key,
-  }: {
-    value: string;
-    isChecked?: boolean;
-    key?: "s" | "a" | "i";
-  }) => {
-    if (key === "s") {
-      if (isChecked) {
-        setState((prev) => ({ ...prev, category: [...prev.category, value] }));
-      } else {
-        const filteredCatagory = state.category.filter(
-          (catagory) => catagory !== value
-        );
-        setState((prev) => ({ ...prev, category: filteredCatagory }));
+  const getSearchData = useCallback(
+    ({
+      value,
+      isChecked,
+      key,
+    }: {
+      value: string;
+      isChecked?: boolean;
+      key?: "s" | "a" | "i";
+    }) => {
+      if (key === "s") {
+        if (isChecked) {
+          setState((prev) => ({
+            ...prev,
+            category: [...prev.category, value],
+          }));
+        } else {
+          const filteredCatagory = state.category.filter(
+            (catagory) => catagory !== value
+          );
+          setState((prev) => ({ ...prev, category: filteredCatagory }));
+        }
+      } else if (key === "a") {
+        if (isChecked) {
+          setState((prev) => ({ ...prev, area: [...prev.area, value] }));
+        } else {
+          const filteredArea = state.area.filter((area) => area !== value);
+          setState((prev) => ({ ...prev, area: filteredArea }));
+        }
       }
-    } else if (key === "a") {
-      if (isChecked) {
-        setState((prev) => ({ ...prev, area: [...prev.area, value] }));
-      } else {
-        const filteredArea = state.area.filter((area) => area !== value);
-        setState((prev) => ({ ...prev, area: filteredArea }));
-      }
-    }
-  };
+    },
+    [state.area, state?.category]
+  );
   const getIngredientData = (values: string[]) => {
     setState((prev) => ({ ...prev, ingredient: values }));
   };
+
   useEffect(() => {
-    const fetchCatagoryData = async () => {
-      try {
-        const mealPromises = state.category.map((catagory: string) =>
-          getMeals(catagory, true)
-        );
-        const meals = await Promise.all(mealPromises);
-        const mealsCatagoryResponse = meals.flatMap(
-          (mealObj) => mealObj?.data?.meals || []
-        );
-        const cardData: IFavoriteData[] = transformCardData(
-          mealsCatagoryResponse,
-          "meal",
-          storedFavorites
-        );
-        setMealsAll((prev: any) => ({
-          ...prev,
-          catagories: cardData,
-        }));
-      } catch (error) {
-        console.log("error");
-      }
-    };
+    (
+      fetchData({
+        data: state?.category,
+        trigger: getMeals,
+        key: "meals",
+      }) as Promise<any>
+    ).then((res: any) => {
+      const transformedData = transformCardData(res, "meal", storedFavorites);
+      setMealsAll((prev: any) => ({
+        ...prev,
+        catagories: transformedData,
+      }));
+    });
 
-    const fetchAreaData = async () => {
-      try {
-        const areaPromises = state.area.map((area: string) =>
-          getAreaMeals(area, true)
-        );
-        const areas = await Promise.all(areaPromises);
-        const mealsAreaResponse = areas.flatMap(
-          (mealObj) => mealObj?.data?.meals || []
-        );
-        const cardData: IFavoriteData[] = transformCardData(
-          mealsAreaResponse,
-          "meal",
-          storedFavorites
-        );
-        setMealsAll((prev: any) => ({
-          ...prev,
-          areas: cardData,
-        }));
-      } catch (error) {
-        console.log("error");
-      }
-    };
-
-    const fetchIngredientData = async () => {
-      try {
-        const ingredientPromises = state.ingredient.map((ingredient: string) =>
-          getIngredientMeals(ingredient, true)
-        );
-        const ingredients = await Promise.all(ingredientPromises);
-        const mealsIngredientResponse = ingredients.flatMap(
-          (mealObj) => mealObj?.data?.meals || []
-        );
-        const cardData: IFavoriteData[] = transformCardData(
-          mealsIngredientResponse,
-          "meal",
-          storedFavorites
-        );
-        setMealsAll((prev: any) => ({
-          ...prev,
-          ingredients: cardData,
-        }));
-      } catch (error) {
-        console.log("error");
-      }
-    };
-
-    fetchCatagoryData();
-    fetchAreaData();
-    fetchIngredientData();
+    (
+      fetchData({
+        data: state?.area,
+        trigger: getAreaMeals,
+        key: "meals",
+      }) as Promise<any>
+    ).then((res: any) => {
+      const transformedData = transformCardData(res, "meal", storedFavorites);
+      setMealsAll((prev: any) => ({
+        ...prev,
+        areas: transformedData,
+      }));
+    });
+    (
+      fetchData({
+        data: state?.ingredient,
+        trigger: getIngredientMeals,
+        key: "meals",
+      }) as Promise<any>
+    ).then((res: any) => {
+      const transformedData = transformCardData(res, "meal", storedFavorites);
+      setMealsAll((prev: any) => ({
+        ...prev,
+        ingredients: transformedData,
+      }));
+    });
 
     if (
       !state.category?.length &&
@@ -165,7 +144,7 @@ export const Meals = () => {
         ingredients: [],
       });
     }
-  }, [state, getAreaMeals, getMeals, getIngredientMeals]);
+  }, [state, getAreaMeals, getMeals, getIngredientMeals,storedFavorites]);
 
   const mealList = useMemo(() => {
     const categoryIds = mealsAll?.catagories.map((meal: any) => meal.id);
@@ -227,7 +206,7 @@ export const Meals = () => {
     } else {
       return transformCardData(data?.meals!, "meal", storedFavorites);
     }
-  }, [mealsAll, data?.meals, state]);
+  }, [mealsAll, data?.meals, state,storedFavorites]);
 
   return (
     <>
@@ -254,7 +233,9 @@ export const Meals = () => {
             gutter={[16, 16]}
           >
             {isMealDataLoading ? (
-              Array.from({ length: 10 }).map((_, index) => <ImgCardSkeloton />)
+              Array.from({ length: 10 }).map((_, index) => (
+                <ImgCardSkeloton key={index} />
+              ))
             ) : mealList?.length ? (
               <CustomCard dataList={mealList} />
             ) : (
