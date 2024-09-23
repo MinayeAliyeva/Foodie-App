@@ -8,7 +8,7 @@ import {
   Checkbox,
   Input,
 } from "@chakra-ui/react";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { useGetMealsByCategoriesQuery } from "../../../store/apis/mealsApi";
 import { minMealCatagorieLength } from "../data";
 import { IMealCategories, IMealCategory } from "../../../modules";
@@ -26,7 +26,6 @@ interface IProps {
 }
 
 const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const { data: catagorieData } = useGetMealsByCategoriesQuery<{
     data: IMealCategories;
   }>();
@@ -46,12 +45,6 @@ const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
   };
 
   const handleChangeChecBox = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedValue = event.target.value;
-    setSelectedCategories((prevSelected) =>
-      prevSelected.includes(selectedValue)
-        ? prevSelected.filter((item) => item !== selectedValue)
-        : [...prevSelected, selectedValue]
-    );
     getCatagorieData({
       value: event.target.value,
       isChecked: event.target.checked,
@@ -59,16 +52,19 @@ const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
     });
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-    const filteredCatagories = catagorieData?.categories.filter(
-      (catagorie: IMealCategory) =>
-        catagorie?.strCategory
-          .toLowerCase()
-          .includes(event.target.value.toLowerCase())
-    );
-    setCatagorieState(filteredCatagories);
-  };
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(event.target.value);
+      const filteredCatagories = catagorieData?.categories.filter(
+        (catagorie: IMealCategory) =>
+          catagorie?.strCategory
+            .toLowerCase()
+            .includes(event.target.value.toLowerCase())
+      );
+      setCatagorieState(filteredCatagories);
+    },
+    [catagorieData?.categories]
+  );
 
   const checkingEquality =
     catagorieState?.length === catagorieData?.categories?.length;
@@ -91,9 +87,6 @@ const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
               <Checkbox
                 value={catagorie?.strCategory}
                 onChange={handleChangeChecBox}
-                isChecked={selectedCategories.includes(
-                  catagorie?.strCategory || ""
-                )}
               >
                 {catagorie?.strCategory}
               </Checkbox>

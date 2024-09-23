@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import {
   Button,
   ButtonGroup,
@@ -15,9 +14,9 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FaArrowRightLong } from "react-icons/fa6";
-import { ICardData, IFavoriteData } from "../../modules";
+import {  IFavoriteData } from "../../modules";
 
 export interface IMeal {
   idMeal?: string;

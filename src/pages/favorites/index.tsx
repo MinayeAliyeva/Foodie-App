@@ -21,7 +21,6 @@ const Favorites = () => {
     const filteredFavoriteList = favoriteList?.filter(
       (favorite) => favorite?.id !== id
     );
-    console.log({filteredFavoriteList});
     
     setFavoriteList(filteredFavoriteList);
     localStorage.setItem("likes", JSON.stringify(filteredFavoriteList));

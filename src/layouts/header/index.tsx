@@ -1,17 +1,8 @@
-import {
-  Flex,
-  Input,
-  Link,
-  Text,
-  InputGroup,
-  InputRightElement,
-  Button,
-} from "@chakra-ui/react";
+import { Flex, Link, Text } from "@chakra-ui/react";
 import logo from "../../assets/images/logo.png";
-import { FaPhoneAlt, FaSearch, FaUser } from "react-icons/fa";
+import { FaPhoneAlt } from "react-icons/fa";
 import { IoMdMail } from "react-icons/io";
-import { FaLocationDot } from "react-icons/fa6"; 
-import { FaSignInAlt } from "react-icons/fa";
+import { FaLocationDot } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
 import XContainer from "../../shared/components/XContainer";
 
@@ -80,60 +71,29 @@ const Header = () => {
             <img width="70px" src={logo} alt="" />
           </Link>
           <Flex align="center" justifyContent="center" gap="10px">
-          <NavLink to="/" style={{ fontWeight: "bold" }}>
-            Ana Sayfa
-          </NavLink>
-          <Text>|</Text>
-          <NavLink to="/meals" style={{ fontWeight: "bold" }}>
-            Yemekler
-          </NavLink>
-          <Text>|</Text>
-          <NavLink style={{ fontWeight: "bold" }} to="/cocktails">
-            Icecekler
-          </NavLink>
-          <Text>|</Text>
-          <NavLink style={{ fontWeight: "bold" }} to="/favorites">
-            Sevimliler
-          </NavLink>
-        </Flex>
-          <Flex gap="20px" align="center">
-            <Flex align="center" gap="5px">
-              <Button
-                colorScheme="blackAlpha"
-                variant="outline"
-                borderRadius="50px"
-              >
-                <FaSignInAlt color="#000" />
-                <Link
-                  href="/login"
-                  fontSize="sm"
-                  _hover={{ textDecoration: "none" }}
-                  color="#000"
-                >
-                  Giriş
-                </Link>
-              </Button>
-              <Button
-                colorScheme="blackAlpha"
-                variant="outline"
-                borderRadius="50px"
-              >
-                <FaUser color="#000" />
-                <Link
-                  href="/register"
-                  fontSize="sm"
-                  _hover={{ textDecoration: "none" }}
-                  color="#000"
-                >
-                  Qeydiyyat
-                </Link>
-              </Button>
-            </Flex>
-            <Flex align="center" gap="5px"></Flex>
+            <NavLink to="/" style={{ fontWeight: "bold" }}>
+              Ana Sayfa
+            </NavLink>
+            <Text>|</Text>
+            <NavLink to="/meals" style={{ fontWeight: "bold" }}>
+              Yemekler
+            </NavLink>
+            <Text>|</Text>
+            <NavLink style={{ fontWeight: "bold" }} to="/cocktails">
+              Icecekler
+            </NavLink>
+            <Text>|</Text>
+            <NavLink style={{ fontWeight: "bold" }} to="/favorites">
+              Sevimliler
+            </NavLink>
+            <Text>|</Text>
+            <NavLink style={{ fontWeight: "bold" }} to="/test">
+              PAGINATION HOME
+            </NavLink>
           </Flex>
+     
         </Flex>
       </XContainer>
-
     </>
   );
 };

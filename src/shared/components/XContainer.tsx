@@ -6,7 +6,6 @@ interface IProps {
   bg?: string;
   children?: ReactNode;
   minHeight?: string;
-  // [key: string]: string;
 }
 const XContainer: FC<IProps> = ({
   width = "100%",

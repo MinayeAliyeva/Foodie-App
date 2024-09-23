@@ -8,12 +8,10 @@ import {
   Checkbox,
   Input,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { useGetCoctailCatagorieListQuery, useLazyGetCoctailByGlasesQuery } from "../../../store/apis/coctailApi";
+import React, { useCallback, useEffect, useState } from "react";
+import { useGetCoctailCatagorieListQuery } from "../../../store/apis/coctailApi";
 
 const DrinkCatagorie = ({ getCatagorieData }: any) => {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [value, setValue] = useState("");
   const { data: drinkCatagories } = useGetCoctailCatagorieListQuery<any>();
 
   const [catagorieState, setCatagorieState] = useState<any>([]);
@@ -23,14 +21,6 @@ const DrinkCatagorie = ({ getCatagorieData }: any) => {
     }
   }, [drinkCatagories]);
   const handleChangeChecBox = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedValue = event.target.value;
-   
-
-    setSelectedCategories((prevSelected) =>
-      prevSelected.includes(selectedValue)
-        ? prevSelected.filter((item) => item !== selectedValue)
-        : [...prevSelected, selectedValue]
-    );
     getCatagorieData({
       value: event.target.value,
       isChecked: event.target.checked,
@@ -42,8 +32,8 @@ const DrinkCatagorie = ({ getCatagorieData }: any) => {
     const data = categories?.slice(0, size);
     setCatagorieState(data);
   };
-  const handleChange = (event: any) => {
-    setValue(event.target.value);
+
+  const handleChange = useCallback((event: any) => {
     const filteredCatagories = drinkCatagories?.drinks.filter(
       (catagorie: any) =>
         catagorie?.strCategory
@@ -51,10 +41,10 @@ const DrinkCatagorie = ({ getCatagorieData }: any) => {
           .includes(event.target.value.toLowerCase())
     );
     setCatagorieState(filteredCatagories);
-  };
+  }, [drinkCatagories?.drinks]);
+
   const checkingEquality =
     catagorieState?.length === drinkCatagories?.drinks?.length;
-
 
   return (
     <AccordionItem>
@@ -74,7 +64,6 @@ const DrinkCatagorie = ({ getCatagorieData }: any) => {
               <Checkbox
                 value={catagorie?.strCategory}
                 onChange={handleChangeChecBox}
-           
               >
                 {catagorie?.strCategory}
               </Checkbox>
@@ -96,7 +85,7 @@ const DrinkCatagorie = ({ getCatagorieData }: any) => {
             )
           }
         >
-              {checkingEquality ? "Gizle" : "Hepsini Göster"}
+          {checkingEquality ? "Gizle" : "Hepsini Göster"}
         </Button>
       </AccordionPanel>
     </AccordionItem>

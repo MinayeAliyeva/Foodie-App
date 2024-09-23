@@ -1,4 +1,4 @@
-import { IFavoriteData } from "../../modules";
+import { IFavoriteData, IMeal, IMealDatainterface } from "../../modules";
 
 export const filteredResponseData = <T = any>(
   ids: string[],
@@ -15,7 +15,6 @@ export const filteredResponseData = <T = any>(
   const countedData = Object.keys(countMap).filter(
     (id) => countMap[id] === num
   );
-  console.log("countedDataDRINK", countedData);
   return countedData.map((id: any) => data.find((item: any) => item.id === id));
 };
 
@@ -41,6 +40,19 @@ interface IFetchDataArg {
 type TFetchDataFn = ({ data, trigger, key }: IFetchDataArg) => Promise<any>;
 
 export const fetchData: TFetchDataFn = async ({ data, trigger, key }) => {
+  console.log("DATA", data);
+  if (key === "mealsCatagory" || key === "drinksCatagory") {
+    const dataFromGetCatagory = data?.map((item: any) => {
+      return trigger(item?.strCategory);
+    });
+    const responses = await Promise.all(dataFromGetCatagory ?? []);
+    console.log("RESPONSES", responses);
+    const dataResponse = responses?.flatMap(
+      (mealObj: any) =>
+        mealObj?.data?.[key === "mealsCatagory" ? "meals" : "drinks"] || []
+    );
+    return dataResponse;
+  }
   const dataPromises = data?.map((item: any) => {
     return trigger(item, true);
   });
@@ -53,13 +65,16 @@ export const fetchData: TFetchDataFn = async ({ data, trigger, key }) => {
   return dataResponse;
 };
 
-export const transformCardData = <T = any>(
-  data: T[],
+export const transformCardData = (
+  data:
+    | IMeal[]
+    | { strDrink: string; strDrinkThumb: string; idDrink: string }[]
+    | any,
   key: "meal" | "drink",
   storedFavorites: any
 ): IFavoriteData[] => {
   if (key === "meal") {
-    return data?.map((meal: T | any) => ({
+    return data?.map((meal: IMealDatainterface | any) => ({
       itemTitle: meal?.strMeal,
       itemThumb: meal?.strMealThumb,
       itemCategory: meal?.strCategory,
@@ -75,7 +90,7 @@ export const transformCardData = <T = any>(
       key,
     }));
   } else {
-    return data?.map((drink: T | any) => ({
+    return data?.map((drink: any) => ({
       itemTitle: drink?.strDrink,
       itemThumb: drink?.strDrinkThumb,
       itemCategory: drink?.strCategory,

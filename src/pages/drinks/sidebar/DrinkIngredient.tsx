@@ -1,14 +1,12 @@
 import { Box } from "@chakra-ui/react";
 import { Select, Typography } from "antd";
 import { IoSearchOutline } from "react-icons/io5";
-import { useGetIngredientsQuery } from "../../../store/apis/mealsApi";
-import { FC, useState } from "react";
+import {  useState } from "react";
 import { useGetCoctailIngredientsListQuery } from "../../../store/apis/coctailApi";
 const { Option } = Select;
 const DrinkIngredient = ({getIngredientData}:any) => {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const { data: ingredientData } = useGetCoctailIngredientsListQuery();
-  console.log("ingredientData", ingredientData);
 
   const handleChange = (values: string[]) => {
     getIngredientData(values);

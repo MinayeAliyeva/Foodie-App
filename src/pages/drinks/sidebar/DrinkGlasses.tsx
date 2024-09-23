@@ -1,8 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  useGetCoctailGlasesListQuery,
-  useLazyGetCoctailByGlasesQuery,
-} from "../../../store/apis/coctailApi";
+import React, { useCallback, useEffect, useState } from "react";
+import { useGetCoctailGlasesListQuery } from "../../../store/apis/coctailApi";
 import {
   AccordionButton,
   AccordionIcon,
@@ -16,8 +13,6 @@ import {
 
 const DrinkGlasses = ({ getGlassesData }: any) => {
   const [glassesState, setGlassesState] = useState<any>([]);
-  const [selectedGlasses, setSelectedGlasses] = useState<string[]>([]);
-  const [value, setValue] = useState("");
   const { data: glasesData } = useGetCoctailGlasesListQuery();
 
   const geGlasses = (glasses?: any, size: number = 5) => {
@@ -33,27 +28,22 @@ const DrinkGlasses = ({ getGlassesData }: any) => {
   }, [glasesData]);
 
   const handleChangeChecBox = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedValue = event.target.value;
-    setSelectedGlasses((prevSelected) =>
-      prevSelected.includes(selectedValue)
-        ? prevSelected.filter((item) => item !== selectedValue)
-        : [...prevSelected, selectedValue]
-    );
+ 
     getGlassesData({
       value: event.target.value,
       isChecked: event.target.checked,
       key: "g",
     });
   };
-  const handleChange = (event: any) => {
-    setValue(event.target.value);
-    const filteredGlasses = glasesData?.drinks?.filter((glass: any) =>
-      glass?.strGlass
-        .toLowerCase()
-        .includes(event.target.value.toLowerCase())
-    );
-    setGlassesState(filteredGlasses);
-  };
+  const handleChange = useCallback(
+    (event: any) => {
+      const filteredGlasses = glasesData?.drinks?.filter((glass: any) =>
+        glass?.strGlass.toLowerCase().includes(event.target.value.toLowerCase())
+      );
+      setGlassesState(filteredGlasses);
+    },
+    [glasesData?.drinks]
+  );
   const checkingEquality = glassesState.length === glasesData?.drinks?.length;
 
   return (

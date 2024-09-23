@@ -9,7 +9,7 @@ import {
 
 const enum url {
   BASE_URL = "https://www.themealdb.com/api/json/v1/1/",
-  SEARCH_BY_URL = "search.php?",
+  SEARCH_URL = "search.php?",
   DETAIL_URL = "lookup.php?",
   CATOGORY_URL = "categories.php",
   AREA_URL = "list.php?",
@@ -27,12 +27,12 @@ const mealsApi = createApi({
   endpoints: (builder) => ({
     getMeals: builder.query<MealsResponse, string | void>({
       query: (category = "") => ({
-        url: url?.SEARCH_BY_URL,
+        url: url?.SEARCH_URL,
         params: {
           s: category,
         },
       }),
-      keepUnusedDataFor: 60,
+      keepUnusedDataFor: 600,
     }),
     getMealsByCategories: builder.query<IMealCategories, void>({
       query: () => url?.CATOGORY_URL,
@@ -81,6 +81,7 @@ const mealsApi = createApi({
       query: () => ({
         url: url?.RANDOM_URL,
       }),
+      keepUnusedDataFor: 0,
     }),
   }),
 });

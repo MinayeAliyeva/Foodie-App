@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Drawer, Button } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import "./navbar.css";
-// import logo from "./../../logo.svg";
 
 const NavBar = ({ menu }: any) => {
   const [visible, setVisible] = useState(false);
@@ -23,9 +22,6 @@ const NavBar = ({ menu }: any) => {
       >
         {menu}
       </Drawer>
-      <a href="/">
-        {/* <img src={logo} className="logo" alt="logo" /> */}
-      </a>
     </nav>
   );
 };

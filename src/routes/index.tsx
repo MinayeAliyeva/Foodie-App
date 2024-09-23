@@ -7,6 +7,7 @@ import { Drinks } from "../pages/drinks";
 import Favotites from "../pages/favorites";
 import MealDetail from "../pages/meals/detail/MealDetail";
 import DrinkDetail from "../pages/drinks/detail/DrinkDetail";
+import TestHome from "../pages/test/TestPagination";
 // TODO => create enum for path and use them all page
 export const routes: MyRouterObject[] = [
   {
@@ -40,6 +41,10 @@ export const routes: MyRouterObject[] = [
       {
         path: "coctail-detail/:id",
         element: <DrinkDetail />,
+      },
+      {
+        path: "/test",
+        element: <TestHome />,
       },
     ],
   },

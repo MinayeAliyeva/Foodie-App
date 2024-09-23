@@ -1,5 +1,5 @@
 import { useParams } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Box,
   Heading,
@@ -18,7 +18,6 @@ const DrinkDetail = () => {
     { data: coctailData, isLoading: coctailLoading, error: coctailError },
   ] = useLazyGetCoctailDetailQuery();
 
-  const [isExpanded, setIsExpanded] = useState(false);
   const { id } = useParams<{ id: string }>();
 
   const detailCoctail = coctailData?.drinks;
@@ -29,9 +28,6 @@ const DrinkDetail = () => {
     }
   }, [id, getCoctailDetail]);
 
-  const handleToggle = () => {
-    setIsExpanded(!isExpanded);
-  };
 
   if (coctailLoading)
     return (
