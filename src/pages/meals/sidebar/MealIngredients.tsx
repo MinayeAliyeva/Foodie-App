@@ -21,7 +21,7 @@ export const MealIngredient: FC<IProps> = ({ getIngredientData }) => {
   return (
     <Box style={{ paddingLeft: "15px", marginTop: "5px" }}>
       <Typography style={{ fontWeight: "bold", fontSize: "18px" }}>
-        Ingredient
+        Ingredients
       </Typography>
       <Select
         mode="multiple"
@@ -32,7 +32,7 @@ export const MealIngredient: FC<IProps> = ({ getIngredientData }) => {
           fontSize: "18px",
           margin: "10px 0",
         }}
-        placeholder={"Ingredient Axtar"}
+        placeholder={"Search..."}
         suffixIcon={<IoSearchOutline />}
         onChange={handleChange}
         value={selectedValues}

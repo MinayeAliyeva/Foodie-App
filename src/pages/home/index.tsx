@@ -120,13 +120,13 @@ const Home = () => {
   return (
     <Box p={4} maxW="1200px" mx="auto">
       <Heading as="h3" size="lg" color="teal.500" mb={4}>
-        Tüm Menü
+        All Menu
       </Heading>
       <Flex mb={6} align="center" justify="space-between">
         <Input
           onChange={handleSearchChange}
           type="text"
-          placeholder="Yemek veya içecek ara..."
+          placeholder="Search for food or drinks..."
           value={searchValue}
           size="lg"
           border="2px solid #ccc"
@@ -137,20 +137,20 @@ const Home = () => {
         />
 
         <Button onClick={onClickGetRandomMealData} ml={4} colorScheme="teal">
-          Random Bir Yemek
+        Random Meal
         </Button>
         <Button
           ml={4}
           colorScheme="teal"
           onClick={onClickGetRandomCocktailData}
         >
-          Random Bir İçecek
+        Random Cocktail
         </Button>
       </Flex>
 
       {searchValue.length > 0 && searchValue.length < 2 && (
         <Typography style={{ color: "red", fontWeight: "bold" }} color="red">
-          En az 2 karakter girmelisiniz
+         You must enter at least 2 characters
         </Typography>
       )}
       <VStack spacing={8} align="start">
@@ -171,11 +171,11 @@ const Home = () => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Random GELEN YEMEK VE ICECEKLER</ModalHeader>
+          <ModalHeader>MEALS AND DRINKS FROM Random</ModalHeader>
           <Typography
             style={{ fontWeight: "bold", color: "red", marginLeft: "24px" }}
           >
-            RANDOM VERI SAYI:{randomMealAndCocktailData.length}
+          RANDOM DATA NUMBER:{randomMealAndCocktailData.length}
           </Typography>
           <ModalCloseButton />
           <ModalBody

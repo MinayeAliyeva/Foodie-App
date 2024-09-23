@@ -74,13 +74,13 @@ const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
       <h2>
         <AccordionButton>
           <Box as="span" flex="1" textAlign="left">
-            Kategoriler
+            Catagories
           </Box>
           <AccordionIcon />
         </AccordionButton>
       </h2>
       <AccordionPanel pb={4}>
-        <Input placeholder="Ara" onChange={handleChange} value={value} />
+        <Input placeholder="Search..." onChange={handleChange} value={value} />
         <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {catagorieState?.map((catagorie) => (
             <Box key={catagorie?.idCategory}>
@@ -110,7 +110,7 @@ const Catagorie: FC<IProps> = ({ getCatagorieData }) => {
             )
           }
         >
-          {checkingEquality ? "Gizle" : "Hepsini Göster"}
+          {checkingEquality ? "Hide" : "Show All"}
         </Button>
       </AccordionPanel>
     </AccordionItem>
