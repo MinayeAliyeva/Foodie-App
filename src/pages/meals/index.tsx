@@ -144,7 +144,7 @@ export const Meals = () => {
         ingredients: [],
       });
     }
-  }, [state, getAreaMeals, getMeals, getIngredientMeals,storedFavorites]);
+  }, [state, getAreaMeals, getMeals, getIngredientMeals, storedFavorites]);
 
   const mealList = useMemo(() => {
     const categoryIds = mealsAll?.catagories.map((meal: any) => meal.id);
@@ -206,7 +206,7 @@ export const Meals = () => {
     } else {
       return transformCardData(data?.meals!, "meal", storedFavorites);
     }
-  }, [mealsAll, data?.meals, state,storedFavorites]);
+  }, [mealsAll, data?.meals, state, storedFavorites]);
 
   return (
     <>
@@ -222,7 +222,7 @@ export const Meals = () => {
             style={{ fontSize: "25px", color: "#C62828", fontWeight: "bold" }}
           >
             {" "}
-            VERI SAYI: {mealList?.length}
+            AMOUNT: {mealList?.length}
           </Row>
           <Row
             style={{

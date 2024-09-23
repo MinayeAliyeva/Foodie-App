@@ -51,13 +51,13 @@ const DrinkCatagorie = ({ getCatagorieData }: any) => {
       <h2>
         <AccordionButton>
           <Box as="span" flex="1" textAlign="left">
-            Kategoriler
+            Catagories
           </Box>
           <AccordionIcon />
         </AccordionButton>
       </h2>
       <AccordionPanel pb={4}>
-        <Input placeholder="Axtar" onChange={handleChange} />
+        <Input placeholder="Search" onChange={handleChange} />
         <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {catagorieState?.map((catagorie: any) => (
             <Box key={catagorie?.idCategory}>
@@ -85,7 +85,7 @@ const DrinkCatagorie = ({ getCatagorieData }: any) => {
             )
           }
         >
-          {checkingEquality ? "Gizle" : "Hepsini Göster"}
+          {checkingEquality ? "Hide" : " Show All"}
         </Button>
       </AccordionPanel>
     </AccordionItem>

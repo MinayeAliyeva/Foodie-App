@@ -72,26 +72,25 @@ const Header = () => {
           </Link>
           <Flex align="center" justifyContent="center" gap="10px">
             <NavLink to="/" style={{ fontWeight: "bold" }}>
-              Ana Sayfa
+              Home
             </NavLink>
             <Text>|</Text>
             <NavLink to="/meals" style={{ fontWeight: "bold" }}>
-              Yemekler
+              Meals
             </NavLink>
             <Text>|</Text>
             <NavLink style={{ fontWeight: "bold" }} to="/cocktails">
-              Icecekler
+              Cocktail
             </NavLink>
             <Text>|</Text>
             <NavLink style={{ fontWeight: "bold" }} to="/favorites">
-              Sevimliler
+              Favorites
             </NavLink>
             <Text>|</Text>
             <NavLink style={{ fontWeight: "bold" }} to="/test">
               PAGINATION HOME
             </NavLink>
           </Flex>
-     
         </Flex>
       </XContainer>
     </>

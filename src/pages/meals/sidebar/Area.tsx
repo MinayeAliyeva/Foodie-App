@@ -64,7 +64,7 @@ export const MealArea = ({ getAreaData }: any) => {
         </AccordionButton>
       </h2>
       <AccordionPanel pb={4}>
-        <Input placeholder="Axtar" onChange={handleChange} />
+        <Input placeholder="Search..." onChange={handleChange} />
         <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {areasState?.map((area: any) => (
             <Box key={area?.strArea}>
@@ -92,7 +92,7 @@ export const MealArea = ({ getAreaData }: any) => {
             )
           }
         >
-          {checkingEquality ? "Gizle" : "Hepsini Göster"}
+          {checkingEquality ? "Hide" : "Show All"}
         </Button>
       </AccordionPanel>
     </AccordionItem>

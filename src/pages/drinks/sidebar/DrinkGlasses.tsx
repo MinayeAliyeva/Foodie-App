@@ -51,13 +51,13 @@ const DrinkGlasses = ({ getGlassesData }: any) => {
       <h2>
         <AccordionButton>
           <Box as="span" flex="1" textAlign="left">
-            Bakal
+            Glasses
           </Box>
           <AccordionIcon />
         </AccordionButton>
       </h2>
       <AccordionPanel pb={4}>
-        <Input placeholder="Axtar" onChange={handleChange} />
+        <Input placeholder="Search" onChange={handleChange} />
         <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {glassesState.map((glass: any) => (
             <Box key={glass?.strGlass}>
