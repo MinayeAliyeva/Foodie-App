@@ -21,7 +21,7 @@ import { useGetCoctailsQuery, useGetMealsQuery } from "../../store";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useLazyGetRandomMealQueryQuery } from "../../store/apis/mealsApi";
 import { Typography } from "antd";
-import { IFavoriteData, IMealCategories } from "../../modules";
+import { IFavoriteData } from "../../modules";
 import {
   Cocktail,
   useLazyGetRandomcocktailQuery,
@@ -111,6 +111,7 @@ const Home = () => {
       (prevs: any) => debouncedSearchValue ?? [...prevs, searchValue]
     );
   };
+  
   const onClickGetRandomMealData = () => {
     getRandomMealData();
   };

@@ -15,7 +15,7 @@ export const filteredResponseData = <T = any>(
   const countedData = Object.keys(countMap).filter(
     (id) => countMap[id] === num
   );
-  return countedData.map((id: any) => data.find((item: any) => item.id === id));
+  return countedData?.map?.((id: any) => data.find((item: any) => item.id === id));
 };
 
 export const delay = async (ms: number) => {
@@ -90,7 +90,7 @@ export const transformCardData = (
       key,
     }));
   } else {
-    return data?.map((drink: any) => ({
+    return data?.map?.((drink: any) => ({
       itemTitle: drink?.strDrink,
       itemThumb: drink?.strDrinkThumb,
       itemCategory: drink?.strCategory,

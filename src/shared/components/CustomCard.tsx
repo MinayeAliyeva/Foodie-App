@@ -24,7 +24,7 @@ const CustomCard: FC<IProps> = ({ dataList }) => {
   const handleLike = useCallback(
     (idDrink: string) => {
       const filteredCardData = cardData?.find((drink) => drink?.id === idDrink);
-      const mapedCardData = cardData.map((data) =>
+      const mapedCardData = cardData?.map?.((data) =>
         data?.id === filteredCardData?.id
           ? { ...data, isLiked: !data?.isLiked }
           : data
